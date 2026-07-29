@@ -1,0 +1,617 @@
+{
+  "version": "castle-wars-card-art-v1",
+  "status": "qa-passed",
+  "canvas": {
+    "output": [
+      600,
+      600
+    ],
+    "logical": [
+      150,
+      150
+    ],
+    "scale": 4,
+    "resampling": "nearest-neighbor",
+    "background": "#FFFFFF"
+  },
+  "renderingContract": {
+    "imagesContain": "scene artwork only",
+    "rallyRendersAsHtml": [
+      "card frame",
+      "rarity treatment",
+      "card name",
+      "numbers",
+      "effect text",
+      "interaction state"
+    ]
+  },
+  "countsByRarity": {
+    "junk": 10,
+    "common": 20,
+    "uncommon": 18,
+    "rare": 12,
+    "legendary": 4
+  },
+  "cardBack": {
+    "filename": "card-back.png",
+    "sha256": "92c14215166a93fb13bd43911d0a558bfd6f83b67a373ac4033c75d8e997307b"
+  },
+  "cards": [
+    {
+      "number": 1,
+      "id": "stale-bread",
+      "name": "Stale Bread",
+      "rarity": "junk",
+      "filename": "card-stale-bread.png",
+      "path": "cards/card-stale-bread.png",
+      "sha256": "fda65a0ded7f3ebf34c77e27a8bde95727accf5fb1fe75dd92768dd1303ec16c"
+    },
+    {
+      "number": 2,
+      "id": "angry-chicken",
+      "name": "Angry Chicken",
+      "rarity": "junk",
+      "filename": "card-angry-chicken.png",
+      "path": "cards/card-angry-chicken.png",
+      "sha256": "d4004af2c8741e462cc72acbe012fa2d31fe35d9f7dfd8ae655639fb5443f669"
+    },
+    {
+      "number": 3,
+      "id": "overripe-tomato",
+      "name": "Overripe Tomato",
+      "rarity": "junk",
+      "filename": "card-overripe-tomato.png",
+      "path": "cards/card-overripe-tomato.png",
+      "sha256": "ae62c1bf33100abe88de152641f4b3145c2a7d9344230fbd8c9dd2cc27e2090b"
+    },
+    {
+      "number": 4,
+      "id": "bucket-of-mud",
+      "name": "Bucket of Mud",
+      "rarity": "junk",
+      "filename": "card-bucket-of-mud.png",
+      "path": "cards/card-bucket-of-mud.png",
+      "sha256": "f1c2959b0909544a2e4174286729c0e509106cc471ea9e53928ae9580c53195f"
+    },
+    {
+      "number": 5,
+      "id": "squeaky-catapult",
+      "name": "Squeaky Catapult",
+      "rarity": "junk",
+      "filename": "card-squeaky-catapult.png",
+      "path": "cards/card-squeaky-catapult.png",
+      "sha256": "d99813e3abe6938f65d5fe665e468d6ca75a90965ac1349326640f9dc0e48d4e"
+    },
+    {
+      "number": 6,
+      "id": "motivational-goose",
+      "name": "Motivational Goose",
+      "rarity": "junk",
+      "filename": "card-motivational-goose.png",
+      "path": "cards/card-motivational-goose.png",
+      "sha256": "5acaa5f32b552ae03cb9c1b634d62060abe6f59509d39c2534e1e55cb06860ab"
+    },
+    {
+      "number": 7,
+      "id": "off-key-trumpeter",
+      "name": "Off-Key Trumpeter",
+      "rarity": "junk",
+      "filename": "card-off-key-trumpeter.png",
+      "path": "cards/card-off-key-trumpeter.png",
+      "sha256": "4329c8add1209f6237399586b525b9e6dda76bde49b74d6dd15a9881d5251ba7"
+    },
+    {
+      "number": 8,
+      "id": "confused-peasant",
+      "name": "Confused Peasant",
+      "rarity": "junk",
+      "filename": "card-confused-peasant.png",
+      "path": "cards/card-confused-peasant.png",
+      "sha256": "439945bbb651cdb6dfe4c116219ff934fe1b0d0b9552bc3e84c4f521b2d047ad"
+    },
+    {
+      "number": 9,
+      "id": "decorative-banner",
+      "name": "Decorative Banner",
+      "rarity": "junk",
+      "filename": "card-decorative-banner.png",
+      "path": "cards/card-decorative-banner.png",
+      "sha256": "0e5e8da65e2bea3424c4e2da4a8d41d6c3f521588523b506c92b417bbd4f01cb"
+    },
+    {
+      "number": 10,
+      "id": "sleepy-sentry",
+      "name": "Sleepy Sentry",
+      "rarity": "junk",
+      "filename": "card-sleepy-sentry.png",
+      "path": "cards/card-sleepy-sentry.png",
+      "sha256": "02b906ddf820437c1308e924e46068829024e00c58dc43130b8321be3babfcfd"
+    },
+    {
+      "number": 11,
+      "id": "pebble-sling",
+      "name": "Pebble Sling",
+      "rarity": "common",
+      "filename": "card-pebble-sling.png",
+      "path": "cards/card-pebble-sling.png",
+      "sha256": "bad9d2457df2d2d66ec5c4541d7a4caea7d37d1c846d45f5319e4654e10d6c83"
+    },
+    {
+      "number": 12,
+      "id": "slingstone",
+      "name": "Slingstone",
+      "rarity": "common",
+      "filename": "card-slingstone.png",
+      "path": "cards/card-slingstone.png",
+      "sha256": "05f4a441dbfd3c651371ded6a48a6ce23c8fd3d3daea424995848a49d23d8802"
+    },
+    {
+      "number": 13,
+      "id": "archery-volley",
+      "name": "Archery Volley",
+      "rarity": "common",
+      "filename": "card-archery-volley.png",
+      "path": "cards/card-archery-volley.png",
+      "sha256": "00a0e1b47ed93347559fbe40ea4d2cd7e20859cc87e753d473e1c7037395f9af"
+    },
+    {
+      "number": 14,
+      "id": "war-drums",
+      "name": "War Drums",
+      "rarity": "common",
+      "filename": "card-war-drums.png",
+      "path": "cards/card-war-drums.png",
+      "sha256": "3b6788487cfb7ab0cd118de8da00677eb6d383548299def210fbd9ac0d162ebf"
+    },
+    {
+      "number": 15,
+      "id": "longbow-rain",
+      "name": "Longbow Rain",
+      "rarity": "common",
+      "filename": "card-longbow-rain.png",
+      "path": "cards/card-longbow-rain.png",
+      "sha256": "36a6923e2ef6deec82dfdf504607bebf3828800d416939af4205bb86ff910dea"
+    },
+    {
+      "number": 16,
+      "id": "javelin-volley",
+      "name": "Javelin Volley",
+      "rarity": "common",
+      "filename": "card-javelin-volley.png",
+      "path": "cards/card-javelin-volley.png",
+      "sha256": "cf3307765ab65da9a220668c6df65ce081e4b7c9d2edbfadcd7682b614756ae4"
+    },
+    {
+      "number": 17,
+      "id": "torch-toss",
+      "name": "Torch Toss",
+      "rarity": "common",
+      "filename": "card-torch-toss.png",
+      "path": "cards/card-torch-toss.png",
+      "sha256": "61741336b9b8745cb1ecfeb8449c8abe78a814ff697f4507f594c6012cf0d731"
+    },
+    {
+      "number": 18,
+      "id": "ember-arrows",
+      "name": "Ember Arrows",
+      "rarity": "common",
+      "filename": "card-ember-arrows.png",
+      "path": "cards/card-ember-arrows.png",
+      "sha256": "fef0b5d421798d7a256f8f8c058871a19fc5c364c7e8399d8a0e3c41f38f825b"
+    },
+    {
+      "number": 19,
+      "id": "battering-ram",
+      "name": "Battering Ram",
+      "rarity": "common",
+      "filename": "card-battering-ram.png",
+      "path": "cards/card-battering-ram.png",
+      "sha256": "905ab13ac8db0c2b13931d1377641f9505aefb576b6167ef636d7599ef3fb080"
+    },
+    {
+      "number": 20,
+      "id": "boulder-drop",
+      "name": "Boulder Drop",
+      "rarity": "common",
+      "filename": "card-boulder-drop.png",
+      "path": "cards/card-boulder-drop.png",
+      "sha256": "c06451a2be47b49393d08b02d54e1cd77aeb2221d18a4f34fb927e8ba75885ee"
+    },
+    {
+      "number": 21,
+      "id": "caltrops",
+      "name": "Caltrops",
+      "rarity": "common",
+      "filename": "card-caltrops.png",
+      "path": "cards/card-caltrops.png",
+      "sha256": "a0b3ccf5204baa64022227e4fda75ff90ef289569b6c2b800b57e4185ea878e0"
+    },
+    {
+      "number": 22,
+      "id": "wicker-shield",
+      "name": "Wicker Shield",
+      "rarity": "common",
+      "filename": "card-wicker-shield.png",
+      "path": "cards/card-wicker-shield.png",
+      "sha256": "7773ce4d2afc20a74ed2250556a50a8a8ff34a7db6ed3b120d0052b76470b0dc"
+    },
+    {
+      "number": 23,
+      "id": "oak-shield",
+      "name": "Oak Shield",
+      "rarity": "common",
+      "filename": "card-oak-shield.png",
+      "path": "cards/card-oak-shield.png",
+      "sha256": "102457d8b7d689e10b57cd7499f3dae98d0eea5ad7633ea20a39f60438db9a4c"
+    },
+    {
+      "number": 24,
+      "id": "palisade",
+      "name": "Palisade",
+      "rarity": "common",
+      "filename": "card-palisade.png",
+      "path": "cards/card-palisade.png",
+      "sha256": "3ed0cdf54cc1367e52ef4102f6932a244a1328db4d56ef1e790deae6a73ae358"
+    },
+    {
+      "number": 25,
+      "id": "shield-wall",
+      "name": "Shield Wall",
+      "rarity": "common",
+      "filename": "card-shield-wall.png",
+      "path": "cards/card-shield-wall.png",
+      "sha256": "145d33ea3eeb4931bb9bdbcb86906bd34dfe96e8b7792fd96aff196de34935f4"
+    },
+    {
+      "number": 26,
+      "id": "mend-the-wall",
+      "name": "Mend the Wall",
+      "rarity": "common",
+      "filename": "card-mend-the-wall.png",
+      "path": "cards/card-mend-the-wall.png",
+      "sha256": "da5f9a79028572224447d52db3090c213cce9b00adb02cdb2a0aa2bf6872170e"
+    },
+    {
+      "number": 27,
+      "id": "bucket-brigade",
+      "name": "Bucket Brigade",
+      "rarity": "common",
+      "filename": "card-bucket-brigade.png",
+      "path": "cards/card-bucket-brigade.png",
+      "sha256": "32aba537ebbecc96dd24e2876a4453cf57bd04352de682d5d75c70ed6991f200"
+    },
+    {
+      "number": 28,
+      "id": "falcon-scout",
+      "name": "Falcon Scout",
+      "rarity": "common",
+      "filename": "card-falcon-scout.png",
+      "path": "cards/card-falcon-scout.png",
+      "sha256": "b981bff4e1a67b3dbacfb4e4200c21623bbd9b58c27ff70a669b19098cff22d9"
+    },
+    {
+      "number": 29,
+      "id": "signal-fire",
+      "name": "Signal Fire",
+      "rarity": "common",
+      "filename": "card-signal-fire.png",
+      "path": "cards/card-signal-fire.png",
+      "sha256": "05c2f5fcd872961840b64acc3803fcc88f968dea3466976e9c63e644adba0454"
+    },
+    {
+      "number": 30,
+      "id": "rally-cry",
+      "name": "Rally Cry",
+      "rarity": "common",
+      "filename": "card-rally-cry.png",
+      "path": "cards/card-rally-cry.png",
+      "sha256": "2164beaa33280262f0c4af67d2f92ef30bf5b1a16743564d007d048eedca2cf7"
+    },
+    {
+      "number": 31,
+      "id": "siege-ballista",
+      "name": "Siege Ballista",
+      "rarity": "uncommon",
+      "filename": "card-siege-ballista.png",
+      "path": "cards/card-siege-ballista.png",
+      "sha256": "1804afc8e3d2637d59f4e796b610bc37d3b96d259290011138a2092776791e18"
+    },
+    {
+      "number": 32,
+      "id": "fire-arrows",
+      "name": "Fire Arrows",
+      "rarity": "uncommon",
+      "filename": "card-fire-arrows.png",
+      "path": "cards/card-fire-arrows.png",
+      "sha256": "fb6fe144cee10fed833aa38cae429e44188a5f266309f64c58138f4dfd39d222"
+    },
+    {
+      "number": 33,
+      "id": "banner-of-courage",
+      "name": "Banner of Courage",
+      "rarity": "uncommon",
+      "filename": "card-banner-of-courage.png",
+      "path": "cards/card-banner-of-courage.png",
+      "sha256": "50a08b83cf7fe252790fa869a9c33554895045dc994c5a9ffb0f2b5cbb6502d6"
+    },
+    {
+      "number": 34,
+      "id": "trebuchet",
+      "name": "Trebuchet",
+      "rarity": "uncommon",
+      "filename": "card-trebuchet.png",
+      "path": "cards/card-trebuchet.png",
+      "sha256": "9c65ff08b1db2961f9f7b63e637daddce5d5f8a8dd9ddf01a6ce9cd704dfe7d0"
+    },
+    {
+      "number": 35,
+      "id": "sappers-tunnel",
+      "name": "Sapper's Tunnel",
+      "rarity": "uncommon",
+      "filename": "card-sappers-tunnel.png",
+      "path": "cards/card-sappers-tunnel.png",
+      "sha256": "cf9cc1cbdd8c223436a2cdddb9bd520b4071201118bd7e34fe0429ea8a499a49"
+    },
+    {
+      "number": 36,
+      "id": "night-raid",
+      "name": "Night Raid",
+      "rarity": "uncommon",
+      "filename": "card-night-raid.png",
+      "path": "cards/card-night-raid.png",
+      "sha256": "e693121c343312c1898fec76e8299561eb8d091bca740252f084320714148882"
+    },
+    {
+      "number": 37,
+      "id": "fox-thief",
+      "name": "Fox Thief",
+      "rarity": "uncommon",
+      "filename": "card-fox-thief.png",
+      "path": "cards/card-fox-thief.png",
+      "sha256": "b50a8dc0082cf3f082d7bd71beadd12a33d8e8075e8ba11946a58077ffb80c55"
+    },
+    {
+      "number": 38,
+      "id": "pickpocket",
+      "name": "Pickpocket",
+      "rarity": "uncommon",
+      "filename": "card-pickpocket.png",
+      "path": "cards/card-pickpocket.png",
+      "sha256": "2343df03bc9d4ff987c411118f98d91e3494d55139ac73c0d862473c8ded02a3"
+    },
+    {
+      "number": 39,
+      "id": "oil-pot",
+      "name": "Oil Pot",
+      "rarity": "uncommon",
+      "filename": "card-oil-pot.png",
+      "path": "cards/card-oil-pot.png",
+      "sha256": "e295ab81bc3efcb9d4422c2783f9ae708c8dbc451a94e73ddd00449e74adfb63"
+    },
+    {
+      "number": 40,
+      "id": "iron-portcullis",
+      "name": "Iron Portcullis",
+      "rarity": "uncommon",
+      "filename": "card-iron-portcullis.png",
+      "path": "cards/card-iron-portcullis.png",
+      "sha256": "ec3faa96680900dbe27e701ec46863238d80f2bef75a48b55280a06cc5aeb34c"
+    },
+    {
+      "number": 41,
+      "id": "stone-mason",
+      "name": "Stone Mason",
+      "rarity": "uncommon",
+      "filename": "card-stone-mason.png",
+      "path": "cards/card-stone-mason.png",
+      "sha256": "c0d06c957d412f7fb67e296fd9f101def51d536f23c62438569d95be1ba2b7d2"
+    },
+    {
+      "number": 42,
+      "id": "mirror-shield",
+      "name": "Mirror Shield",
+      "rarity": "uncommon",
+      "filename": "card-mirror-shield.png",
+      "path": "cards/card-mirror-shield.png",
+      "sha256": "f945225b800168bfab6b1d6ac93467f33b84a31b48ea54cdc59ce2d1b941295a"
+    },
+    {
+      "number": 43,
+      "id": "war-snail",
+      "name": "War Snail",
+      "rarity": "uncommon",
+      "filename": "card-war-snail.png",
+      "path": "cards/card-war-snail.png",
+      "sha256": "505486375ed0d8ee38b50a046da53731e19f27798f4c35f6899fc4c51c65c153"
+    },
+    {
+      "number": 44,
+      "id": "echo-horn",
+      "name": "Echo Horn",
+      "rarity": "uncommon",
+      "filename": "card-echo-horn.png",
+      "path": "cards/card-echo-horn.png",
+      "sha256": "0d5f22c7c28ddd33ffc6c41ced0ef3367ed3a30c4057c26d8d49a32b1e57f381"
+    },
+    {
+      "number": 45,
+      "id": "rally-horn",
+      "name": "Rally Horn",
+      "rarity": "uncommon",
+      "filename": "card-rally-horn.png",
+      "path": "cards/card-rally-horn.png",
+      "sha256": "865a7ba8b0c50582a12c00158aa142eca9a9b473447d649d41ffec5e0a695438"
+    },
+    {
+      "number": 46,
+      "id": "chain-shot",
+      "name": "Chain Shot",
+      "rarity": "uncommon",
+      "filename": "card-chain-shot.png",
+      "path": "cards/card-chain-shot.png",
+      "sha256": "087e8ead26e98bb4179f9edba0555865ba1fa4487e1844e9b7cd5f68f24ba53d"
+    },
+    {
+      "number": 47,
+      "id": "grease-the-steps",
+      "name": "Grease the Steps",
+      "rarity": "uncommon",
+      "filename": "card-grease-the-steps.png",
+      "path": "cards/card-grease-the-steps.png",
+      "sha256": "a96f4765812270a6705beebd9766cb44d48242b877391b54810e261189db6efd"
+    },
+    {
+      "number": 48,
+      "id": "double-or-nothing",
+      "name": "Double or Nothing",
+      "rarity": "uncommon",
+      "filename": "card-double-or-nothing.png",
+      "path": "cards/card-double-or-nothing.png",
+      "sha256": "d7352784a26e7cc52a6187687b239258cceab6c104fd2af7513b20eae79ed4e8"
+    },
+    {
+      "number": 49,
+      "id": "royal-champion",
+      "name": "Royal Champion",
+      "rarity": "rare",
+      "filename": "card-royal-champion.png",
+      "path": "cards/card-royal-champion.png",
+      "sha256": "d6bc36a4b43ce1c0e166c7d7951785f1184e8398ed84a7739a1683a9175cf60a"
+    },
+    {
+      "number": 50,
+      "id": "siege-tower",
+      "name": "Siege Tower",
+      "rarity": "rare",
+      "filename": "card-siege-tower.png",
+      "path": "cards/card-siege-tower.png",
+      "sha256": "1f1064a3c65b6a9037a413b9a6c84701b6c9992357565f085ea397647bd8d0a2"
+    },
+    {
+      "number": 51,
+      "id": "dragon-perch",
+      "name": "Dragon Perch",
+      "rarity": "rare",
+      "filename": "card-dragon-perch.png",
+      "path": "cards/card-dragon-perch.png",
+      "sha256": "546e550d5db00df5a283e78e5a1765fda1b5a847a219bcc2d756b4d4367a5eb8"
+    },
+    {
+      "number": 52,
+      "id": "tempest",
+      "name": "Tempest",
+      "rarity": "rare",
+      "filename": "card-tempest.png",
+      "path": "cards/card-tempest.png",
+      "sha256": "389163a46a43bc6e4415d604fdfee973159d80f0bf8a7ef0aa8d298193a2e71a"
+    },
+    {
+      "number": 53,
+      "id": "greek-fire",
+      "name": "Greek Fire",
+      "rarity": "rare",
+      "filename": "card-greek-fire.png",
+      "path": "cards/card-greek-fire.png",
+      "sha256": "51748695dc87d20c5092d4d07f43ba7912eab1180962e8ec43386b84dd0a3927"
+    },
+    {
+      "number": 54,
+      "id": "the-turncoat",
+      "name": "The Turncoat",
+      "rarity": "rare",
+      "filename": "card-the-turncoat.png",
+      "path": "cards/card-the-turncoat.png",
+      "sha256": "c199e274054b8679e20b6fb9d7cd15a8785cd93de05963917f38d7751af76a25"
+    },
+    {
+      "number": 55,
+      "id": "mirror-of-kings",
+      "name": "Mirror of Kings",
+      "rarity": "rare",
+      "filename": "card-mirror-of-kings.png",
+      "path": "cards/card-mirror-of-kings.png",
+      "sha256": "23abf156659e113e2aab30fcc83ca1f24555db1263345a627511f337deca792d"
+    },
+    {
+      "number": 56,
+      "id": "sappers-chorus",
+      "name": "Sappers' Chorus",
+      "rarity": "rare",
+      "filename": "card-sappers-chorus.png",
+      "path": "cards/card-sappers-chorus.png",
+      "sha256": "93586ac7886302634e0767dfbe096f5f93a564607e50235db6282acf2b9ae41d"
+    },
+    {
+      "number": 57,
+      "id": "iron-vanguard",
+      "name": "Iron Vanguard",
+      "rarity": "rare",
+      "filename": "card-iron-vanguard.png",
+      "path": "cards/card-iron-vanguard.png",
+      "sha256": "8cf4547019d087058b305f2bb276c381b1473db28236041356ae4336b6fee76f"
+    },
+    {
+      "number": 58,
+      "id": "the-long-winter",
+      "name": "The Long Winter",
+      "rarity": "rare",
+      "filename": "card-the-long-winter.png",
+      "path": "cards/card-the-long-winter.png",
+      "sha256": "8232e4bedb8aeeca73e70e2db31c85d2c93eff27566df7f0d4e67afe95cac747"
+    },
+    {
+      "number": 59,
+      "id": "thief-of-hours",
+      "name": "Thief of Hours",
+      "rarity": "rare",
+      "filename": "card-thief-of-hours.png",
+      "path": "cards/card-thief-of-hours.png",
+      "sha256": "c8357b2b7332ccb3b8ffc96868c5b40b59ec146a2c8722fa75e787eaf79c8630"
+    },
+    {
+      "number": 60,
+      "id": "wardens-gambit",
+      "name": "Warden's Gambit",
+      "rarity": "rare",
+      "filename": "card-wardens-gambit.png",
+      "path": "cards/card-wardens-gambit.png",
+      "sha256": "e63ff04d1530320e121b6d2655ba5ce2ad0095caf71ffc4f06bf27563d12c1fd"
+    },
+    {
+      "number": 61,
+      "id": "the-sleeping-giant",
+      "name": "The Sleeping Giant",
+      "rarity": "legendary",
+      "filename": "card-the-sleeping-giant.png",
+      "path": "cards/card-the-sleeping-giant.png",
+      "sha256": "5c61bb7b2599c400c4e30be5cc69ad9644bdd9d2854ed81fe6163e3ff509b407"
+    },
+    {
+      "number": 62,
+      "id": "eclipse",
+      "name": "Eclipse",
+      "rarity": "legendary",
+      "filename": "card-eclipse.png",
+      "path": "cards/card-eclipse.png",
+      "sha256": "1ccca2644b31f0c6bd19b8f4c93b2c924b7dc2edcab01cb4d66eb4ddf2bdcf23"
+    },
+    {
+      "number": 63,
+      "id": "the-kingmaker",
+      "name": "The Kingmaker",
+      "rarity": "legendary",
+      "filename": "card-the-kingmaker.png",
+      "path": "cards/card-the-kingmaker.png",
+      "sha256": "25a802f95bbfe4e28139fd6737ff65e2aa0c9ba705014b069f67573db6de3a74"
+    },
+    {
+      "number": 64,
+      "id": "phoenix-banner",
+      "name": "Phoenix Banner",
+      "rarity": "legendary",
+      "filename": "card-phoenix-banner.png",
+      "path": "cards/card-phoenix-banner.png",
+      "sha256": "68f2523b844af262f5666c783918dd2cae16f0a5f13a0f0e39436cf21b02ea86"
+    }
+  ]
+}
