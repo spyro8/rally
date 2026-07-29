@@ -2,6 +2,7 @@
  "class": "pathfinder",
  "tier": "tier-3",
  "fps": 6,
+ "loop": "ping-pong-verified",
  "frames": [
   "char/02-pathfinder-adventurer-idle-f1.webp",
   "char/02-pathfinder-adventurer-idle-f2.webp",
