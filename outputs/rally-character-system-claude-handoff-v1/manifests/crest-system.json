@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "1.0.0",
+  "project": "Rally Crest System",
+  "status": "approved-concept-awaiting-separated-assets",
+  "artProvider": "ChatGPT",
+  "implementationOwner": "Claude",
+  "classCrests": {
+    "editable": false,
+    "governingReference": "references/02-approved-six-class-crests.png",
+    "masterSize": 400,
+    "runtimeSizes": [192, 96, 48],
+    "items": [
+      {
+        "id": "pathfinder",
+        "symbols": ["trail-shoe", "compass", "mountain"]
+      },
+      {
+        "id": "vanguard",
+        "symbols": ["dumbbell", "power-bolt"]
+      },
+      {
+        "id": "sage",
+        "symbols": ["digital-book", "focus-star"]
+      },
+      {
+        "id": "monk",
+        "symbols": ["lotus", "breathing-pulse"]
+      },
+      {
+        "id": "guardian",
+        "symbols": ["crescent", "recovery-pulse"]
+      },
+      {
+        "id": "tidecaller",
+        "symbols": ["droplet", "endurance-wave"]
+      }
+    ]
+  },
+  "teamCrests": {
+    "editable": true,
+    "governingReference": "references/03-team-crest-variety-board.png",
+    "compositionMode": "layer-recipe",
+    "masterSize": 400,
+    "runtimeSizes": [192, 96, 48],
+    "sourceBackground": "#FFFFFF",
+    "initialLibrary": {
+      "frameShapes": 4,
+      "borderTreatments": 6,
+      "fieldPatterns": 8,
+      "centralEmblems": 24,
+      "palettes": 24,
+      "optionalAccents": 6
+    },
+    "recipeFields": [
+      "frameId",
+      "borderId",
+      "fieldId",
+      "emblemId",
+      "paletteId",
+      "accentId"
+    ],
+    "emblemIds": [
+      "wolf",
+      "falcon",
+      "bear",
+      "fox",
+      "stag",
+      "owl",
+      "ram",
+      "turtle",
+      "lion",
+      "mountain",
+      "pine",
+      "wave",
+      "rising-sun",
+      "crescent",
+      "comet",
+      "star",
+      "lightning",
+      "flame",
+      "compass",
+      "wildflower",
+      "river",
+      "cloud",
+      "acorn",
+      "summit-flag"
+    ],
+    "excludedContent": [
+      "weapons",
+      "skulls",
+      "gore",
+      "national-flags",
+      "real-team-logos",
+      "copyrighted-marks",
+      "class-crest-symbols"
+    ],
+    "rules": {
+      "seededRandomization": true,
+      "saveRecipe": true,
+      "cacheComposite": true,
+      "preserveEditableRecipe": true,
+      "validateContrast": true,
+      "warnExactDuplicateWithinLeague": true,
+      "allowArbitraryUploadsInPhaseOne": false,
+      "renderTeamNameAsHtml": true
+    }
+  }
+}
