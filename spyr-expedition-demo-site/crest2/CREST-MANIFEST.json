@@ -1,0 +1,430 @@
+{
+  "version": "34.3-assets-v1",
+  "status": "qa-passed",
+  "modularPartsSystem": "retired",
+  "pickerMode": "fifty-complete-pre-designed-crests",
+  "canvas": {
+    "output": [
+      400,
+      400
+    ],
+    "logical": [
+      100,
+      100
+    ],
+    "scale": 4,
+    "resampling": "nearest-neighbor",
+    "background": "#FFFFFF",
+    "registration": "center"
+  },
+  "paletteDistribution": {
+    "deep-green": 9,
+    "slate-blue": 9,
+    "ocean-blue": 8,
+    "ember-orange-red": 8,
+    "gold": 8,
+    "fresh-green": 8
+  },
+  "entries": [
+    {
+      "number": 1,
+      "filename": "crest-01.png",
+      "motif": "oak-leaf",
+      "category": "nature",
+      "paletteFamily": "deep-green",
+      "sha256": "712a60f76c34dcfc42390c1bc79293522c39650050080a33c151ab64a82dfe3c"
+    },
+    {
+      "number": 2,
+      "filename": "crest-02.png",
+      "motif": "fox",
+      "category": "animal",
+      "paletteFamily": "deep-green",
+      "sha256": "d361eaa2229744b684fc14b92a4562302711a5f5639baabfb489b51f212bc318"
+    },
+    {
+      "number": 3,
+      "filename": "crest-03.png",
+      "motif": "trail-compass",
+      "category": "adventure",
+      "paletteFamily": "deep-green",
+      "sha256": "06eaa6b11af990a8971eeb8d8f54ce6f78cc96675a96da5dabcc831f409e9979"
+    },
+    {
+      "number": 4,
+      "filename": "crest-04.png",
+      "motif": "mountain-peaks",
+      "category": "nature",
+      "paletteFamily": "deep-green",
+      "sha256": "0dd58d106f3bfdf47fc22eb33089a7c4fa2e7bd20387142585ef919e55e862de"
+    },
+    {
+      "number": 5,
+      "filename": "crest-05.png",
+      "motif": "spiral",
+      "category": "abstract-geometric",
+      "paletteFamily": "deep-green",
+      "sha256": "75382d3b00104a1a71ad74511b5461d1575a2d4c4ecab48e0a075636795d3faf"
+    },
+    {
+      "number": 6,
+      "filename": "crest-06.png",
+      "motif": "barn-owl",
+      "category": "animal",
+      "paletteFamily": "deep-green",
+      "sha256": "b4255eba08c995d294b9c2cbc1e20d59807527ccf78bd89cde3b4e88a60110f6"
+    },
+    {
+      "number": 7,
+      "filename": "crest-07.png",
+      "motif": "trail-boots",
+      "category": "adventure",
+      "paletteFamily": "deep-green",
+      "sha256": "e83ddd32e44cdb56015c0b7fd1ccf775d8a9ed977fc3b4462ee73770fb625426"
+    },
+    {
+      "number": 8,
+      "filename": "crest-08.png",
+      "motif": "waves-and-rising-sun",
+      "category": "nature",
+      "paletteFamily": "deep-green",
+      "sha256": "5ac3c983960aaaaf4c4e192a998fd054f12dde6fdaa646948eb9f0e1bdfff794"
+    },
+    {
+      "number": 9,
+      "filename": "crest-09.png",
+      "motif": "bear-paw",
+      "category": "animal",
+      "paletteFamily": "deep-green",
+      "sha256": "77998a9a0dc74b38b5a90df260e65035e8bcb6f701cdf55c747f49a3395698ef"
+    },
+    {
+      "number": 10,
+      "filename": "crest-10.png",
+      "motif": "expedition-lantern",
+      "category": "adventure",
+      "paletteFamily": "slate-blue",
+      "sha256": "22919b82bd34b125aeda8add8b829b2d05a63e82e4a23e70171d743e6465edf9"
+    },
+    {
+      "number": 11,
+      "filename": "crest-11.png",
+      "motif": "crescent-moon",
+      "category": "nature",
+      "paletteFamily": "slate-blue",
+      "sha256": "70dcc10bcefca247e50aab88c51a82069047d2e92841b1d86ca30a519f92145c"
+    },
+    {
+      "number": 12,
+      "filename": "crest-12.png",
+      "motif": "diving-falcon",
+      "category": "animal",
+      "paletteFamily": "slate-blue",
+      "sha256": "78067999718e07345cd00bfdb10998aef9ff76e3f253d025d9cd5be85459f2b6"
+    },
+    {
+      "number": 13,
+      "filename": "crest-13.png",
+      "motif": "expedition-tent",
+      "category": "adventure",
+      "paletteFamily": "slate-blue",
+      "sha256": "7d2074f967a405243d4954c2a8b404777a5e375dbe48f9d2714e0d16708b2ef5"
+    },
+    {
+      "number": 14,
+      "filename": "crest-14.png",
+      "motif": "interlocking-diamonds",
+      "category": "abstract-geometric",
+      "paletteFamily": "slate-blue",
+      "sha256": "696c6d0a7ec38438d874eeff4d83e430d7f0b06ba78e1c34711a635e8c420bb8"
+    },
+    {
+      "number": 15,
+      "filename": "crest-15.png",
+      "motif": "pine-tree",
+      "category": "nature",
+      "paletteFamily": "slate-blue",
+      "sha256": "c131eea0f833ca6fcf99fc98fdd2e66f7eef36d4b5ff8ca3b6dcdb110dfc5b8d"
+    },
+    {
+      "number": 16,
+      "filename": "crest-16.png",
+      "motif": "stag",
+      "category": "animal",
+      "paletteFamily": "slate-blue",
+      "sha256": "25a4e06ca558a1c546d9396501f64e2cccd975711a0934a46bdc3eaca0c51bef"
+    },
+    {
+      "number": 17,
+      "filename": "crest-17.png",
+      "motif": "crossed-arrows",
+      "category": "adventure",
+      "paletteFamily": "slate-blue",
+      "sha256": "afab2c693f7588eacf0a5f22fdfa377ca69a691b6d1ccfa267e561f78db1792a"
+    },
+    {
+      "number": 18,
+      "filename": "crest-18.png",
+      "motif": "dumbbell",
+      "category": "adventure",
+      "paletteFamily": "slate-blue",
+      "sha256": "4ace5f8bcc44274f30fe586b138f5f3dce38fa4559530f40cbd6a33d2c125c3c"
+    },
+    {
+      "number": 19,
+      "filename": "crest-19.png",
+      "motif": "sea-serpent",
+      "category": "animal",
+      "paletteFamily": "ocean-blue",
+      "sha256": "de12b0be61cfd6c6009cf7e4584765e89a8b05a18a1cdb38fe61423c26cc259d"
+    },
+    {
+      "number": 20,
+      "filename": "crest-20.png",
+      "motif": "waterfall",
+      "category": "nature",
+      "paletteFamily": "ocean-blue",
+      "sha256": "6b30d8e59f6f90277a4ab29506c99f704d649e5fe4338d2d1cfb8121beed1457"
+    },
+    {
+      "number": 21,
+      "filename": "crest-21.png",
+      "motif": "crossed-oars",
+      "category": "adventure",
+      "paletteFamily": "ocean-blue",
+      "sha256": "9957bad8d0f2918789e997c07475ed99ba454cdeda3494787097d0537c3e59a9"
+    },
+    {
+      "number": 22,
+      "filename": "crest-22.png",
+      "motif": "sea-turtle",
+      "category": "animal",
+      "paletteFamily": "ocean-blue",
+      "sha256": "0ff668a7c6dcb12cd6d76bbc90b2d697b151cfac800aa491c19151394c2ac650"
+    },
+    {
+      "number": 23,
+      "filename": "crest-23.png",
+      "motif": "orbital-diamond",
+      "category": "abstract-geometric",
+      "paletteFamily": "ocean-blue",
+      "sha256": "d844206c382566df02cae8328f459c8921c4ee518f0b603a6b9441df3566b55b"
+    },
+    {
+      "number": 24,
+      "filename": "crest-24.png",
+      "motif": "lighthouse",
+      "category": "adventure",
+      "paletteFamily": "ocean-blue",
+      "sha256": "e38ecdf0b9bf31e20cf02530105a7b84ffc2e47391f07fa1ceda65fd58a1b502"
+    },
+    {
+      "number": 25,
+      "filename": "crest-25.png",
+      "motif": "raven",
+      "category": "animal",
+      "paletteFamily": "ocean-blue",
+      "sha256": "baa4ddffd5764a0c6ae93c6c7b4f99839e3dbd88e61f0a9caec097731744dd93"
+    },
+    {
+      "number": 26,
+      "filename": "crest-26.png",
+      "motif": "water-flask",
+      "category": "adventure",
+      "paletteFamily": "ocean-blue",
+      "sha256": "fd9b9bb81bb138136394d5c2d68b8f1dc9b0a148791fa36e67a2148464955a3a"
+    },
+    {
+      "number": 27,
+      "filename": "crest-27.png",
+      "motif": "wolf",
+      "category": "animal",
+      "paletteFamily": "ember-orange-red",
+      "sha256": "1739e970cb8b563acd09479c4604586f2c88a80a1a2670cfe4cf09e4a6b991d9"
+    },
+    {
+      "number": 28,
+      "filename": "crest-28.png",
+      "motif": "kettlebell",
+      "category": "adventure",
+      "paletteFamily": "ember-orange-red",
+      "sha256": "70d5cc27de8733ceb77cd58f21e5b7dcfeefd940a9944c6ed919683530a3938f"
+    },
+    {
+      "number": 29,
+      "filename": "crest-29.png",
+      "motif": "twelve-ray-sunburst",
+      "category": "nature",
+      "paletteFamily": "ember-orange-red",
+      "sha256": "7276b0f9e1d8e68cb72bd7b3296c36716135404cf51a8563da84cbec7ff702f1"
+    },
+    {
+      "number": 30,
+      "filename": "crest-30.png",
+      "motif": "ascending-chevrons",
+      "category": "abstract-geometric",
+      "paletteFamily": "ember-orange-red",
+      "sha256": "a303ff3f4d6a7816936f35594b5b661cb19c9a92c3311615d23e28f55fc4baff"
+    },
+    {
+      "number": 31,
+      "filename": "crest-31.png",
+      "motif": "flame-tree",
+      "category": "nature",
+      "paletteFamily": "ember-orange-red",
+      "sha256": "61fdb3beb51b5cf1f5ac66abd214915ce7ad7607a4893607b2d8aed2074e6b3f"
+    },
+    {
+      "number": 32,
+      "filename": "crest-32.png",
+      "motif": "ram",
+      "category": "animal",
+      "paletteFamily": "ember-orange-red",
+      "sha256": "8c90ced268eef32d141eee6a211e01d6b45a090ede081b64c5b469c2e213241f"
+    },
+    {
+      "number": 33,
+      "filename": "crest-33.png",
+      "motif": "climbing-axe-and-rope",
+      "category": "adventure",
+      "paletteFamily": "ember-orange-red",
+      "sha256": "178d043707dfbf118f3920d996612800e58889e5cc775e1fe06237c10ec871b1"
+    },
+    {
+      "number": 34,
+      "filename": "crest-34.png",
+      "motif": "pulse-shield",
+      "category": "abstract-geometric",
+      "paletteFamily": "ember-orange-red",
+      "sha256": "528fed1a2791a004936ce98588ab6e9970557f674cda5a8a7450a98b1568e634"
+    },
+    {
+      "number": 35,
+      "filename": "crest-35.png",
+      "motif": "crescent-mountain",
+      "category": "nature",
+      "paletteFamily": "gold",
+      "sha256": "185f26d9c0f873c31e447d83202b302c3722efd952326344f095b17ffd674282"
+    },
+    {
+      "number": 36,
+      "filename": "crest-36.png",
+      "motif": "bison",
+      "category": "animal",
+      "paletteFamily": "gold",
+      "sha256": "dd47afac82ae18c010643efec8f42247496fcd05b4d7c73a05b456e777eb776f"
+    },
+    {
+      "number": 37,
+      "filename": "crest-37.png",
+      "motif": "open-book",
+      "category": "adventure",
+      "paletteFamily": "gold",
+      "sha256": "2bd3232cb7a304fde84f9b19daeb7211cc4ea55c28e94a2537c48f8d18f9e552"
+    },
+    {
+      "number": 38,
+      "filename": "crest-38.png",
+      "motif": "endless-knot",
+      "category": "abstract-geometric",
+      "paletteFamily": "gold",
+      "sha256": "48e4edf51da54de51c6dbfc991a6e84dfdf29d7f923d350ff79267eea3445948"
+    },
+    {
+      "number": 39,
+      "filename": "crest-39.png",
+      "motif": "alpine-wildflower",
+      "category": "nature",
+      "paletteFamily": "gold",
+      "sha256": "868b7681ed6a476498b70edd4a45541866323f856ee78dab666c308eb9aef0ce"
+    },
+    {
+      "number": 40,
+      "filename": "crest-40.png",
+      "motif": "running-hare",
+      "category": "animal",
+      "paletteFamily": "gold",
+      "sha256": "2878156024941793bd95d5000637e297671ae2506376e65c43b6cd2e76cf616a"
+    },
+    {
+      "number": 41,
+      "filename": "crest-41.png",
+      "motif": "hourglass",
+      "category": "abstract-geometric",
+      "paletteFamily": "gold",
+      "sha256": "f7d30ef806966d3ba4a2257133aa8448531d61e7f1291e2b0d25c764d040e380"
+    },
+    {
+      "number": 42,
+      "filename": "crest-42.png",
+      "motif": "triple-rings",
+      "category": "abstract-geometric",
+      "paletteFamily": "gold",
+      "sha256": "5e1bff591afe0e5796359c51d6dfa5c33b84faa1c88617493f43183de4895bf6"
+    },
+    {
+      "number": 43,
+      "filename": "crest-43.png",
+      "motif": "acorn-and-oak-leaves",
+      "category": "nature",
+      "paletteFamily": "fresh-green",
+      "sha256": "687716b4988f1c49ac43aeebb7aec872a994cb3fb93c0a333a5bfe348189e06f"
+    },
+    {
+      "number": 44,
+      "filename": "crest-44.png",
+      "motif": "badger",
+      "category": "animal",
+      "paletteFamily": "fresh-green",
+      "sha256": "2acb39f913e4af1497b37cc3f030ed497674dea962ef37e6208bf39b838f1c2e"
+    },
+    {
+      "number": 45,
+      "filename": "crest-45.png",
+      "motif": "split-circle-trail",
+      "category": "abstract-geometric",
+      "paletteFamily": "fresh-green",
+      "sha256": "8e602294e96be07641c685f5345a1e3b7b05ef6550c8f99807a6679ff5df6c48"
+    },
+    {
+      "number": 46,
+      "filename": "crest-46.png",
+      "motif": "ascending-step-arrows",
+      "category": "abstract-geometric",
+      "paletteFamily": "fresh-green",
+      "sha256": "847436ede4fc44abc089287749215ad8c7fe385c9bb911bb231ddd9bed0d7f10"
+    },
+    {
+      "number": 47,
+      "filename": "crest-47.png",
+      "motif": "canyon-river",
+      "category": "nature",
+      "paletteFamily": "fresh-green",
+      "sha256": "d29101d2809fab6cb93ef1fedbac5ae8559f6564601e396c03cc0176ac08ceac"
+    },
+    {
+      "number": 48,
+      "filename": "crest-48.png",
+      "motif": "bee",
+      "category": "animal",
+      "paletteFamily": "fresh-green",
+      "sha256": "fdc8d1e09b7611fabd6170d64b82a6838c9f1ee5e4d335e44f0a429940204e69"
+    },
+    {
+      "number": 49,
+      "filename": "crest-49.png",
+      "motif": "guiding-star",
+      "category": "abstract-geometric",
+      "paletteFamily": "fresh-green",
+      "sha256": "57a14764ba22d1304172b3f510fbfc560d9ec72cddd9e221ccce5134d1113958"
+    },
+    {
+      "number": 50,
+      "filename": "crest-50.png",
+      "motif": "sunrise-path",
+      "category": "nature",
+      "paletteFamily": "fresh-green",
+      "sha256": "719c96f823dbbb1f2d5cbf027569ce82c60ce602c158af40ab0b6c07ea4eb565"
+    }
+  ]
+}
