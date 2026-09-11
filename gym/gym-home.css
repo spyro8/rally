@@ -1,0 +1,56 @@
+/* SPYR GYM library — restyled to match SPYR (cream paper, olive ink, forest accents). */
+:root{--bg:#F7F2E6;--card:#FFFDF8;--cream:#F3ECE1;--line:#EDE5D6;--line2:#E3DBC8;--ink:#262B22;--mut:#9A9283;--forest:#2A5445;--green-d:#1F4033;--pill:#F1EADD;--pill-ink:#6A6250;--hi:#FAF7EE;--gold:#C9A461;
+--sans:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--serif:"IM Fell English",Georgia,"Times New Roman",serif}
+*{box-sizing:border-box}html{color-scheme:light;scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+button,a{-webkit-tap-highlight-color:transparent}button{font:inherit;cursor:pointer}a{color:inherit;text-decoration:none}
+button:focus-visible,a:focus-visible{outline:3px solid var(--forest);outline-offset:4px;border-radius:12px}[hidden]{display:none!important}
+.gym-home{max-width:1280px;margin:auto;padding:0 4vw calc(24px + env(safe-area-inset-bottom))}
+.home-header{height:84px;display:flex;align-items:center;gap:18px;border-bottom:1px solid var(--line)}
+.brand{font-weight:800;font-size:24px;letter-spacing:-.02em;display:flex;align-items:baseline;gap:8px}
+.brand span{font-family:var(--serif);font-variant:small-caps;font-weight:400;font-size:20px;letter-spacing:.06em;color:var(--forest)}
+.header-note{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--mut)}
+.chart-toggle{margin-left:auto;border:1px solid var(--line2);border-radius:99px;background:var(--card);color:var(--ink);padding:10px 16px;font-size:13px;font-weight:600}
+.chart-toggle span{margin-left:8px;color:var(--forest)}
+.home-heading{display:flex;align-items:end;justify-content:space-between;padding:38px 0 22px;gap:20px}
+h1{font-family:var(--serif);font-weight:400;font-size:clamp(34px,4vw,52px);line-height:1.05;letter-spacing:-.01em;margin:0;color:var(--ink)}
+h1 em{font-style:italic;color:var(--forest)}
+.home-heading p{font-size:14px;color:var(--mut);margin:0}.home-heading p span{margin:0 10px;color:var(--line2)}
+.category-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+.category-tile{position:relative;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:22px;overflow:hidden;padding:0;box-shadow:0 1px 0 #fff inset,0 6px 22px rgba(38,43,34,.06);transition:transform .25s,box-shadow .25s}
+.category-tile img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:var(--cream)}
+.category-tile:after{content:none}
+.tile-top{position:absolute;top:12px;left:12px;right:12px;display:flex;align-items:center;justify-content:space-between;font-size:11px;letter-spacing:.14em;font-weight:700;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.5)}
+.tile-number{background:rgba(38,43,34,.72);border:1px solid rgba(255,255,255,.25);border-radius:99px;padding:5px 9px;backdrop-filter:blur(6px)}
+.tile-bottom{padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px;flex:1}
+.tile-bottom h2{font-size:21px;line-height:1.15;letter-spacing:-.01em;font-weight:700;margin:0}
+.tile-meta{display:flex;align-items:center;justify-content:space-between;margin-top:auto;font-size:12px;font-weight:600;color:var(--mut);letter-spacing:.06em}
+.tile-enter{width:32px;height:32px;border-radius:99px;background:var(--forest);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:16px}
+.category-tile:hover{transform:translateY(-3px);box-shadow:0 1px 0 #fff inset,0 14px 30px rgba(38,43,34,.1)}
+.back{margin:22px 0 6px;background:none;border:0;padding:8px 0;color:var(--forest);font-size:14px;font-weight:600}
+.category-intro{padding:8px 0 26px}
+.eyebrow{color:var(--gold);font-family:var(--serif);font-variant:small-caps;font-size:15px;letter-spacing:.1em;margin:0 0 6px}
+.category-intro>p:last-child{font-size:16px;color:#5A5648;max-width:620px;line-height:1.6;margin:10px 0 0}
+.workout-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.workout-card{background:var(--card);border:1px solid var(--line);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 6px 22px rgba(38,43,34,.06)}
+.workout-image{height:180px;width:100%;object-fit:cover;display:block}
+.workout-info{padding:20px;flex:1;display:flex;flex-direction:column;gap:10px}
+.workout-info h2{margin:0;font-size:22px;letter-spacing:-.01em;font-weight:700}
+.workout-info p{font-size:14px;line-height:1.55;margin:0;color:#5A5648}
+.workout-info .workout-meta{font-size:11px;letter-spacing:.12em;font-weight:700;color:var(--mut)}
+.workout-info .enter-workout{margin-top:auto;padding:12px 16px;border-radius:99px;background:var(--forest);color:#fff;display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:700;transition:background .2s}
+.workout-info .enter-workout:hover{background:var(--green-d)}.enter-workout span{font-size:18px}
+.home-footer{display:flex;justify-content:space-between;gap:20px;padding:26px 0;margin-top:28px;border-top:1px solid var(--line);color:var(--mut);font-size:12px}
+.home-footer span:last-child{font-family:var(--serif);font-style:italic;font-size:14px}
+.index-heading{margin:36px 0 16px}.index-heading h2{font-family:var(--serif);font-weight:400;font-size:30px;margin:0 0 6px}.index-heading p{color:var(--mut);font-size:14px;margin:0}
+.table-scroll{overflow:auto;border:1px solid var(--line);border-radius:18px;background:var(--card)}
+table{width:100%;border-collapse:collapse;font-size:14px;white-space:nowrap}th,td{text-align:left;padding:14px 16px;border-bottom:1px solid var(--line)}
+th{color:var(--pill-ink);background:var(--pill);font-weight:700;font-size:12px;letter-spacing:.08em}td a{color:var(--forest);font-weight:600}td:first-child{color:var(--mut)}tr:last-child td{border-bottom:0}
+.host-back{appearance:none;border:1px solid var(--line2);background:var(--card);color:var(--forest);font:inherit;font-size:13px;font-weight:700;padding:9px 14px;border-radius:99px;cursor:pointer}
+.host-back:hover{background:var(--cream)}
+.session-overlay{position:fixed;inset:0;z-index:100;background:#1E241F}.session-overlay iframe{width:100%;height:100%;border:0;display:block}
+@media(max-width:1000px){.category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.workout-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.gym-home{padding:0 16px calc(24px + env(safe-area-inset-bottom))}.home-header{height:68px;gap:10px}.brand{font-size:21px}.brand span{font-size:17px}.header-note{display:none}.chart-toggle{font-size:12px;padding:9px 12px}
+.home-heading{display:block;padding:24px 0 16px}.home-heading p{margin:8px 0 0;font-size:13px}.category-grid{gap:12px}.category-tile{border-radius:18px}.category-tile img{aspect-ratio:1/1}.tile-bottom{padding:12px 13px 13px;gap:8px}.tile-bottom h2{font-size:17px}.tile-top{font-size:10px;letter-spacing:.08em;top:9px;left:9px;right:9px}.tile-number{padding:4px 7px}.tile-meta{font-size:11px}.tile-enter{width:28px;height:28px;font-size:14px}
+.workout-grid{grid-template-columns:1fr}.home-footer{flex-direction:column;gap:6px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
