@@ -1,17 +1,12 @@
-# Village inside SPYR — host contract (v52.23)
+# SPYR GYM inside SPYR — host contract (v52.23)
 
-- Mounted at `./village/index.html?embedded=1` by `gym-launcher.js` (VILLAGE side tab on Home). The iframe stays mounted after
-  "← SPYR" so reopening is instant; it reloads only on a full page load.
-- Saves: every `spyr:village-change` → `localStorage['spyr:village:<profileId>']` (previous snapshot kept at `…:backup`)
-  and mirrored to SPYR's KV (`./config.json` → `/rest/v1/kv`, key `spyr:village:<profileId>`). On open, the newer of
-  local/remote wins (by event count, then `savedAt`).
-- Habit bridge: on open and every 5 minutes while open, the launcher reads `rt1:p:<profileId>` from KV and turns each
-  logged habit-day into a completion `id = <profileId>:<YYYY-MM-DD>:<habit>` (sleep counts at ≥7h; journal/fasting when set;
-  meals when non-empty; workout when minutes/logged). Completed SPYR GYM sessions add `…:<date>:gym:<logId>`.
-  IDs are stable, so re-syncs never double count; a local `…:seen` set avoids re-sending. Completions are credited to
-  their own date (core.js `award` now passes `event.at`), so a backlog does not read as today's prosperity.
-- Removed from the integrated experience: Frontier/military UI, Work board, Market basket, Professions, Gathering &
-  crafting. State fields are retained for save compatibility. Build → Fortifications stays as scenery.
-- Atlases are lossless WebP (`art.js` loads `.webp`).
-- Still SPYR-side TODO once `App.jsx` is available: replace the Garden tab with this, and move the bridge from polling
-  KV to a direct call on each habit log.
+- Single-page app at `./gym/` (`index.html` + `app-bundle.js`; source is `app.js`, `app.css`). Hash routes: `#room=<id>`, `#session=<id>`.
+- Opened by `gym-launcher.js` (vertical green tab on Home) in a full-screen same-origin iframe.
+- Gym → host messages (same origin, checked by source):
+  - `{type:'spyr:gym-exit'}` — back arrow on the rooms screen when embedded; host closes the overlay.
+  - `{type:'spyr:gym-complete', record}` — a session reached its result screen. `record`: `logId`, `date`, `title`, `trainer`, `trainerName`, `elapsed` (s), `complete`, `stamp`, `records[]`.
+- Host capture until React consumes it: `localStorage['spyr:gym:completions']` (deduped by `logId`, last 200). `window.SPYR_GYM.completions()/.clear()/.open()/.close()`.
+- Wiring the Workout habit: on the `spyr:gym-complete` window event or Home mount, add `Math.round(elapsed/60)` workout minutes for that date, then `SPYR_GYM.clear()`.
+- Gym-local storage: `spyr-gym:active` (resumable session), `spyr-gym:history`.
+- Assets are WebP: scenes lossy q86; sprite sheets lossless (runtime colour keys must stay exact).
+- Build: `npm run build` (bundles `app.js`), `npm test`.

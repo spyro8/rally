@@ -8,8 +8,10 @@ import {planPlacement} from './placement.js';
 import {layoutObjects,canStampLayout} from './layouts.js';
 import {atmosphere} from './environment.js';
 import {drawAtmosphere} from './atmosphere.js';
+import {createLandscape,sceneryAt} from './landscape.js';
 export const project=(x,y)=>({x:(x-y)*32,y:(x+y-128)*16});
 export function createRenderer(canvas,get){const ctx=canvas.getContext('2d');let width=0,height=0,frame,last=0;const residents=createResidents();let groundMap=new Map(),activeTime=0,activeWorld=null,activeSky=null,residentView=[],pickables=[],peopleBoxes=[];const camera={x:0,y:0,zoom:1};const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const landscape=createLandscape();
 function resize(){width=canvas.clientWidth;height=canvas.clientHeight;const d=Math.min(2,devicePixelRatio||1);canvas.width=width*d;canvas.height=height*d;}
 function fit(room=false){camera.x=0;camera.y=room?80:Math.max(20,Math.round((height-560)/4));camera.zoom=Math.min(room?1.35:1.15,Math.max(.65,width/(room?700:900)));}
 function screen(x,y){const p=project(x,y);return{x:width/2+camera.x+p.x*camera.zoom,y:height*.46+camera.y+p.y*camera.zoom};}
@@ -28,13 +30,19 @@ if(['waterfall','cascade'].includes(o.type))waterfallLife(ctx,p.x,p.y,size,activ
 if(activeTime&&d.home){for(let i=0;i<3;i++){const life=(activeTime*.00012+i*.33)%1;ctx.fillStyle=`rgba(206,211,195,${(1-life)*.17})`;ctx.fillRect(p.x+12+Math.sin(life*4)*9,p.y-size*.7-life*36,5+life*6,4+life*4);}}
 }
 function draw(time){frame=requestAnimationFrame(draw);if(document.hidden||time-last<33)return;const delta=Math.min(80,time-last);last=time;pickables=[];peopleBoxes=[];const {state,scope,room,placing,moving,rotation,cursor,selection,brushSize=1,layoutId,sandbox,roomId}=get(),b=bounds(scope);groundMap=new Map(scope.objects.filter(isGround).map(o=>[`${o.x},${o.y}`,o.type]));activeWorld=state.world;activeSky=atmosphere(state.world);const motion=!reduced&&state.world.motion;activeTime=motion?time:0;const dpr=Math.min(2,devicePixelRatio||1);ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle=room?'#23382f':'#4c6350';ctx.fillRect(0,0,width,height);ctx.save();ctx.translate(width/2+camera.x,height*.46+camera.y);ctx.scale(camera.zoom,camera.zoom);ctx.imageSmoothingEnabled=false;const corners=[tile(-160,-160),tile(width+160,-160),tile(0,height+180),tile(width+160,height+180)];const minX=room?b.min:Math.max(0,Math.min(...corners.map(p=>p.x))-3),maxX=room?b.max-1:Math.min(127,Math.max(...corners.map(p=>p.x))+3),minY=room?b.min:Math.max(0,Math.min(...corners.map(p=>p.y))-3),maxY=room?b.max-1:Math.min(127,Math.max(...corners.map(p=>p.y))+3);
-for(let y=minY;y<=maxY;y++)for(let x=minX;x<=maxX;x++){const inside=x>=b.min&&x<b.max&&y>=b.min&&y<b.max;ground(x,y,room?room.floor:inside?'meadow':'moss',!!placing&&inside);}
+if(room){for(let y=minY;y<=maxY;y++)for(let x=minX;x<=maxX;x++)ground(x,y,room.floor,!!placing);}
+else{
+ const left=(-width/2-camera.x)/camera.zoom,top=(-height*.46-camera.y)/camera.zoom;
+ landscape.draw(ctx,{left,top,right:left+width/camera.zoom,bottom:top+height/camera.zoom},b,state.world.season,activeTime);
+ if(placing||layoutId){for(let y=Math.max(b.min,minY);y<Math.min(b.max,maxY+1);y++)for(let x=Math.max(b.min,minX);x<Math.min(b.max,maxX+1);x++){const p=project(x,y);diamond(p.x,p.y,'#00000000','#101b16b3');}}
+}
 if(room){residentView=[];const a=project(b.min,b.min),l=project(b.min,b.max),r=project(b.max,b.min);ctx.fillStyle=ROOM_THEMES[room.wall];ctx.beginPath();ctx.moveTo(l.x,l.y);ctx.lineTo(a.x,a.y);ctx.lineTo(r.x,r.y);ctx.lineTo(r.x,r.y-105);ctx.lineTo(a.x,a.y-105);ctx.lineTo(l.x,l.y-105);ctx.closePath();ctx.fill();ctx.strokeStyle='#e0d7b28c';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(l.x,l.y-8);ctx.lineTo(a.x,a.y-8);ctx.lineTo(r.x,r.y-8);ctx.stroke();}
 for(const o of scope.objects)if(isGround(o)&&o.id!==moving)object(o,1,state);
 if(!room){for(let y=Math.max(b.min,minY);y<=Math.min(b.max-1,maxY);y++)for(let x=Math.max(b.min,minX);x<=Math.min(b.max-1,maxX);x++)meadowLife(ctx,x,y,groundMap.get(`${x},${y}`)||'meadow',activeTime,state.world.season);for(const o of scope.objects){const d=itemById(o.type);if(!d.home&&d.group!=='Trees')continue;const f=footprint(o),p=project(o.x+f.w/2,o.y+f.h/2),v=screen(o.x,o.y);if(v.x< -220||v.x>width+220||v.y< -180||v.y>height+220)continue;paintShadow(ctx,d.variants?.[o.variant||0]||d.sprite,p.x,p.y,d.size,{daylight:activeSky.daylight,hour:activeSky.hour,flip:o.rotation===1});if(d.group==='Trees')canopyLight(ctx,p,d.size,activeTime,activeSky);}}
 const drawables=scope.objects.filter(o=>!isGround(o)&&!itemById(o.type).resident&&o.id!==moving).map(o=>({o,depth:o.x+o.y+(footprint(o).w+footprint(o).h)/2}));
 if(room){residentView=residents(state,time,delta,!motion);let index=0;for(const actor of residentView.filter(a=>a.placed&&a.hidden&&a.homeId===roomId)){drawables.push({...actor,hidden:false,x:62.5+index%4,y:63.5+Math.floor(index/4),depth:126+index%4+Math.floor(index/4)});index++;}}
 if(!room){
+for(let y=minY;y<=maxY;y++)for(let x=minX;x<=maxX;x++){const o=sceneryAt(x,y,b);if(o){const d=itemById(o.type),p=project(x+.5,y+.5);paintShadow(ctx,d.sprite,p.x,p.y,d.size*.8,{daylight:activeSky.daylight,hour:activeSky.hour});drawables.push({o:{...o,rotation:0},depth:x+y+1,scenery:true});}}
 residentView=residents(state,time,delta,!motion);drawables.push(...residentView.filter(p=>!p.hidden&&p.id!==moving));
 }
 

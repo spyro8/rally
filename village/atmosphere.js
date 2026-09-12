@@ -10,7 +10,7 @@ export function drawAtmosphere(ctx,{width,height,time,sky,motion,world,lights,in
  if(inside||!motion)return;
  if(sky.daylight>.4&&sky.weather==='clear'){for(let i=0;i<22;i++){const x=(i*137+t*.004)%(width+20),y=(i*91+t*.002+Math.sin(t*.0006+i)*9)%height;ctx.fillStyle=`rgba(255,241,179,${.12+.18*(1+Math.sin(t*.001+i))/2})`;ctx.fillRect(x,y,i%4===0?2:1,1);}}
  ctx.save();ctx.globalAlpha=sky.weatherOpacity??1;
- if(sky.weather==='rain'){ctx.strokeStyle='#c5dfdf66';ctx.lineWidth=1;ctx.beginPath();for(let i=0;i<115;i++){const x=(i*97+t*.12)%(width+100)-50,y=(i*173+t*.37)%(height+100)-50;ctx.moveTo(x,y);ctx.lineTo(x-4,y+13);}ctx.stroke();}
+ if(false&&sky.weather==='rain'){ctx.strokeStyle='#c5dfdf66';ctx.lineWidth=1;ctx.beginPath();for(let i=0;i<115;i++){const x=(i*97+t*.12)%(width+100)-50,y=(i*173+t*.37)%(height+100)-50;ctx.moveTo(x,y);ctx.lineTo(x-4,y+13);}ctx.stroke();}
  if(sky.weather==='snow'){ctx.fillStyle='#e9f1e9bd';for(let i=0;i<80;i++){const y=(i*127+t*.026)%(height+40)-20,x=(i*131+t*.011+Math.sin(t*.001+i)*20)%(width+40)-20;const size=i%3===0?3:2;ctx.fillRect(Math.round(x),Math.round(y),size,size);}}
  ctx.restore();
  // Intermittent wind gusts: a quiet interval follows each moving seed/petal group.

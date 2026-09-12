@@ -1,112 +1,181 @@
-import {reserveCount} from './frontier.js';
-import {mountBed} from './bed-ui.js';
-import {prosperity,creditPoints} from './economy.js';
-import {mountWork} from './work-ui.js';
-import {CATALOG,RECIPES,initialState,itemById,footprint,isGround,canPlace,award,expand,expansionCost,validateState,MAX_OBJECTS,available,ensureRoom,interact,craft,cropStatus,restoreEdit,closeMeadow,resetVillage} from './core.js';
-import {planPlacement} from './placement.js';
-import {atmosphere} from './environment.js';
-import {LAYOUTS,layoutObjects,canStampLayout} from './layouts.js';
-import {createSound} from './sound.js';
-import {loadArt,sprites} from './art.js';
-import {createRenderer} from './renderer.js';
-const $=id=>document.getElementById(id),canvas=$('world'),KEY='spyr-village:v4',embedded=new URLSearchParams(location.search).get('embedded')==='1';
-let state=initialState(),history=[],redoHistory=[],selection=null,placing=null,moving=null,rotation=0,filter='All',cursor={x:64,y:65},roomId=null,sandbox=false,layoutId=null,brushSize=1,saveError=false,hostSaveStatus=null,toastTimer;
-try{const raw=embedded?null:localStorage.getItem(KEY)||localStorage.getItem('spyr-village:v3')||localStorage.getItem('spyr-village:v2')||localStorage.getItem('spyr-village:v1');if(raw)state=validateState(JSON.parse(raw));}catch{saveError=true;}
-const room=()=>roomId?state.rooms[roomId]:null;
-const scope=()=>roomId?{scope:'room',level:room().level||0,objects:room().objects}:state;
-function setObjects(objects){if(roomId)room().objects=objects;else state.objects=objects;}
-const bedCare=mountBed({get:()=>state,commit:()=>{clearHistory();save();selectionUI();},toast});
-const renderer=createRenderer(canvas,()=>({state,scope:scope(),room:room(),placing,moving,rotation,cursor,selection,brushSize,layoutId,sandbox,roomId}));
-loadArt().then(()=>{renderCatalog();$('loading-art').hidden=true;}).catch(()=>{$('loading-art').textContent='Some artwork could not load. Refresh to retry.';toast('Some artwork could not load. Keep the assets folder beside the module.');});
-function toast(message){if($('activities').open)$('activity-status').textContent=message;$('toast').textContent=message;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),4500);}
-function checkpoint(){redoHistory=[];$('redo').disabled=true;history.push(JSON.stringify(state));if(history.length>30)history.shift();$('undo').disabled=false;}
-function clearHistory(){history=[];redoHistory=[];$('undo').disabled=true;$('redo').disabled=true;}
-function save(){try{if(!embedded)localStorage.setItem(KEY,JSON.stringify(state));saveError=false;}catch{saveError=true;toast('Device storage is unavailable. Export a backup from settings.');}update();window.dispatchEvent(new CustomEvent('spyr:village-change',{detail:structuredClone(state)}));}
-function update(){
- $('progress-label').textContent=`${state.progress} habits · ${prosperity(state).label}`;
- $('save-status').textContent=embedded?(hostSaveStatus==='error'?'Your last save did not reach SPYR.':hostSaveStatus==='saving'?'Saving to SPYR…':hostSaveStatus==='saved'?'Saved to SPYR.':'Saving is managed by SPYR.'):saveError?'Saving unavailable. Please export a backup.':`Saved on this device · ${state.objects.length} / ${MAX_OBJECTS} outdoor pieces`;
- $('expand').textContent=state.expansion>=29?'All meadows open':sandbox?'Expand · creative':`Expand land · ${expansionCost(state)} ✧`;
- $('expand').hidden=!!roomId;$('leave-home').hidden=!roomId;$('room-style').hidden=!roomId;
- document.querySelector('h1').textContent=roomId?`${itemById(state.objects.find(o=>o.id===roomId).type).name} interior`:state.villageName;
- const next=CATALOG.filter(d=>!d.recipe&&d.unlock>state.progress).sort((a,b)=>a.unlock-b.unlock)[0];$('next-unlock').textContent=next?`${next.name} unlocks at ${next.unlock} habits. ${next.unlock-state.progress} to go.`:'Your habit collection is unlocked.';
- if(roomId){$('wall-color').value=room().wall;$('floor-type').value=room().floor;}
- renderCatalog();renderActivities();
+import {categories,collection,movements,duration,workSteps} from './collection-data.js';
+import {createSession} from './collection-session.js';
+import {CollectionScene} from './collection-scene.js';
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const el=(tag,cls,html)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(html!=null)n.innerHTML=html;return n;};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=t=>{t=Math.max(0,Math.round(t));return Math.floor(t/60)+':'+String(t%60).padStart(2,'0');};
+const embedded=window.parent!==window;
+const post=msg=>{if(embedded){try{window.parent.postMessage(msg,location.origin);}catch{}}};
+const img=name=>`assets/${name}.webp`;
+const shortCue=m=>{const c=(m.cue||'').split(/(?<=\.)\s+/)[0]||'';return c.length>90?c.slice(0,87).replace(/\s+\S*$/,'')+'…':c;};
+const STORE={active:'spyr-gym:active',history:'spyr-gym:history'};
+const read=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v??d;}catch{return d;}};
+const write=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,JSON.stringify(v));}catch{}};
+
+/* ---------- audio: one soft chime, made on the fly ---------- */
+let ac=null;
+function chime(kind='end'){try{ac??=new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();const t=ac.currentTime,notes=kind==='go'?[523.25,659.25]:[659.25,523.25];notes.forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,t+i*.18);g.gain.linearRampToValueAtTime(.18,t+i*.18+.02);g.gain.exponentialRampToValueAtTime(.001,t+i*.18+.5);o.connect(g).connect(ac.destination);o.start(t+i*.18);o.stop(t+i*.18+.55);});}catch{}}
+
+/* ---------- wake lock ---------- */
+let lock=null;
+async function keepAwake(on){try{if(on&&!lock&&navigator.wakeLock){lock=await navigator.wakeLock.request('screen');lock.addEventListener('release',()=>{lock=null;});}else if(!on&&lock){await lock.release();lock=null;}}catch{lock=null;}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&view==='play'&&session&&!session.paused)keepAwake(true);});
+
+/* ---------- state ---------- */
+const root=$('#app');
+let view='rooms',roomId=null,workout=null,engine=null,session=null,scene=null,raf=0,last=0,started=false,confirmLeave=false;
+
+/* ---------- routing ---------- */
+function go(hash){location.hash=hash;}
+function route(){
+  const p=new URLSearchParams(location.hash.slice(1));
+  const sid=p.get('session'),rid=p.get('room');
+  stopLoop();
+  if(sid&&collection.some(w=>w.id===sid)){workout=collection.find(w=>w.id===sid);roomId=workout.category;renderIntro();return;}
+  if(rid&&categories.some(c=>c.id===rid)){roomId=rid;renderRoom();return;}
+  renderRooms();
 }
-function cancel(){layoutId=null;placing=null;moving=null;selection=null;$('selection').hidden=true;$('placing-label').textContent='Choose something to place.';$('hint').textContent=roomId?'Make yourself at home. Every room saves separately.':'Tap soil to plant. Tap a home to go inside. Drag to explore.';renderCatalog();}
-function openRoom(id){ensureRoom(state,id);roomId=id;cancel();filter='All';renderer.fit(true);save();}
-$('leave-home').onclick=()=>{roomId=null;cancel();filter='All';renderer.fit();update();};
-function begin(type){layoutId=null;placing=type;moving=null;selection=null;rotation=0;$('selection').hidden=true;$('placing-label').textContent=`Tap to place ${itemById(type).name.toLowerCase()}.`;$('hint').textContent='Tap to place · Drag to explore · Rotate to change direction';renderCatalog();}
-function selectionUI(){const o=scope().objects.find(o=>o.id===selection);bedCare.render(o);$('selection').hidden=!o;if(!o)return;const d=itemById(o.type);$('duplicate').hidden=!!d.frontierOnly;$('favorite').hidden=!!d.frontierOnly;$('remove').textContent=d.frontierOnly?'Return to company':'Put away';$('exterior').hidden=!d.variants;$('selected-name').textContent=d.name;$('favorite').textContent=state.favorites.includes(d.id)?'★ Favorited':'☆ Favorite';$('enter-home').hidden=!d.home;$('upgrade-building').hidden=!d.home;$('use-object').hidden=!d.activity||['crop','farmland'].includes(o.type);$('use-object').textContent=d.activity==='crop'?({empty:'Plant',thirsty:'Water',growing:'Check growth',ready:'Harvest'}[cropStatus(state,o)]):d.activity==='restore'?'Restore next stage':d.activity==='till'?'Make garden bed':d.activity==='gate'?(o.open?'Close':'Open'):d.activity==='fish'?'Fish':d.activity==='eggs'?'Collect eggs':d.activity==='gather'?'Gather':d.activity==='rest'?'Rest':'Use';}
-function tap(p){if(!placing&&!layoutId){const resident=renderer.pickResident(p.x,p.y);if(resident){selection=resident;selectionUI();return;}}cursor=renderer.tile(p.x,p.y);
-if(layoutId){if(!canStampLayout(state,scope(),layoutId,cursor.x,cursor.y,sandbox)){toast('This layout needs clear space and its pieces unlocked.');return;}checkpoint();setObjects([...scope().objects,...layoutObjects(layoutId,cursor.x,cursor.y).map(o=>({...o,id:crypto.randomUUID()}))]);cancel();save();toast('A new little place, ready to make your own.');return;}
-if(placing){const target=scope(),old=moving?target.objects.find(o=>o.id===moving):null,d=itemById(placing);if(!moving&&(d.frontierOnly?reserveCount(state,d.resident)<1:!available(state,d,sandbox))){toast('This piece is not unlocked yet.');return;}const o={...old,id:moving||crypto.randomUUID(),type:placing,...cursor,rotation};const plan=planPlacement(target,o,brushSize,moving);if(!plan.valid){toast('Choose a clear spot inside the room or open meadow.');return;}checkpoint();setObjects(plan.objects);if(moving||d.frontierOnly)cancel();save();return;}
-const hit=renderer.pickObject(p.x,p.y)||scope().objects.filter(o=>{const f=footprint(o);return cursor.x>=o.x&&cursor.x<o.x+f.w&&cursor.y>=o.y&&cursor.y<o.y+f.h;}).sort((a,b)=>Number(isGround(a))-Number(isGround(b)))[0];selection=hit?.id||null;selectionUI();}
-function useSelected(){const o=scope().objects.find(o=>o.id===selection);if(!o)return;if(['crop','farmland'].includes(o.type)){selectionUI();return;}try{const text=interact(state,o);clearHistory();save();selectionUI();toast(text);if(itemById(o.type).activity==='craft')$('activities').showModal();}catch(e){toast(e.message);}}
-$('use-object').onclick=useSelected;$('enter-home').onclick=()=>openRoom(selection);
-$('move').onclick=()=>{const o=scope().objects.find(o=>o.id===selection);if(!o)return;placing=o.type;moving=o.id;rotation=o.rotation;cursor={x:o.x,y:o.y};$('selection').hidden=true;toast('Tap a clear spot to move this piece. Escape cancels.');};
-$('rotate-object').onclick=()=>{const o=scope().objects.find(o=>o.id===selection);if(!o)return;const next={...o,rotation:1-o.rotation};if(!canPlace(scope(),next,o.id)){toast('More room is needed to rotate.');return;}checkpoint();Object.assign(o,next);save();};
-$('remove').onclick=()=>{const o=scope().objects.find(o=>o.id===selection);if(!o)return;checkpoint();setObjects(scope().objects.filter(q=>q.id!==o.id));if(itemById(o.type).home){delete state.rooms[o.id];delete state.economy.upgrades[o.id];for(const[id,home]of Object.entries(state.social.homes))if(home===o.id)delete state.social.homes[id];}cancel();save();toast('Piece put away. Undo restores it, including its interior.');};
-function stepHistory(from,to){if(!from.length)return;to.push(JSON.stringify(state));state=restoreEdit(state,JSON.parse(from.pop()));if(roomId&&!state.rooms[roomId])roomId=null;cancel();save();$('undo').disabled=!history.length;$('redo').disabled=!redoHistory.length;}
-$('undo').onclick=()=>stepHistory(history,redoHistory);$('redo').onclick=()=>stepHistory(redoHistory,history);
-$('duplicate').onclick=()=>{const o=scope().objects.find(o=>o.id===selection);if(o){begin(o.type);toast('Tap a clear spot for another copy.');}};
-$('favorite').onclick=()=>{const o=scope().objects.find(o=>o.id===selection);if(!o)return;state.favorites=state.favorites.includes(o.type)?state.favorites.filter(id=>id!==o.type):[...state.favorites,o.type];save();selectionUI();};
-function renderCatalog(){const inside=!!roomId,list=CATALOG.filter(d=>!d.frontierOnly&&(inside?d.space!=='outside':d.space!=='inside'));const groups=['All','Favorites',...new Set(list.map(d=>d.group))];if(!groups.includes(filter))filter='All';$('filters').replaceChildren();for(const f of groups){const b=document.createElement('button');b.textContent=f;b.className=filter===f?'active':'';b.onclick=()=>{filter=f;renderCatalog();};$('filters').append(b);}const q=$('search').value.toLowerCase();$('items').replaceChildren();const visible=list.filter(d=>(filter==='All'||d.group===filter||(filter==='Favorites'&&state.favorites.includes(d.id)))&&d.name.toLowerCase().includes(q));for(const d of visible){const b=document.createElement('button');b.className=placing===d.id?'active':'';b.disabled=!available(state,d,sandbox);b.setAttribute('aria-label',d.name);const c=document.createElement('canvas');c.width=120;c.height=85;const cx=c.getContext('2d');cx.imageSmoothingEnabled=false;const img=sprites.get(d.sprite);if(img){const z=Math.min(112/img.width,80/img.height);cx.drawImage(img,(120-img.width*z)/2,85-img.height*z,img.width*z,img.height*z);}else if(d.color){cx.fillStyle=d.color;cx.beginPath();cx.moveTo(60,15);cx.lineTo(105,42);cx.lineTo(60,68);cx.lineTo(15,42);cx.fill();}const title=document.createElement('strong');title.textContent=d.name;const label=document.createElement('small');label.textContent=b.disabled?d.recipe?'Craft to unlock':`${d.unlock} habits`:d.resident?(d.guard?'Place · stands guard':'Place · starts walking'):'Place freely';b.append(c,title,label);b.onclick=()=>begin(d.id);$('items').append(b);}if(!visible.length)$('items').textContent='No pieces match your search.';}
-$('search').oninput=renderCatalog;$('sandbox').onchange=e=>{sandbox=e.target.checked;cancel();update();toast(sandbox?'Creative mode: try every piece and expand freely. Habit progress stays unchanged.':'Habit unlocks restored. Your layout stays saved.');};
-$('wall-color').onchange=e=>{if(!roomId)return;checkpoint();room().wall=e.target.value;save();};$('floor-type').onchange=e=>{if(!roomId)return;checkpoint();room().floor=e.target.value;save();};
-function renderActivities(){const actions=[['crop','Tend the vegetable garden'],['berry','Gather berries'],['fern','Gather herbs'],['water','Fish at the pond'],['chicken','Collect eggs'],['bench','Take a quiet moment']];$('activity-actions').replaceChildren();for(const[type,label]of actions){const b=document.createElement('button');b.textContent=label;b.onclick=()=>{const o=state.objects.find(o=>o.type===type);if(!o){toast(`Place ${itemById(type).name.toLowerCase()} first.`);return;}roomId=null;cancel();selection=o.id;renderer.fit();const p=renderer.screen(o.x+.5,o.y+.5);renderer.camera.x+=canvas.clientWidth/2-p.x;renderer.camera.y+=canvas.clientHeight*.43-p.y;$('activities').close();update();selectionUI();};$('activity-actions').append(b);}
-$('inventory').replaceChildren();for(const[k,n]of Object.entries(state.inventory)){const s=document.createElement('span');s.textContent=`${k} · ${n}`;$('inventory').append(s);}
-$('recipes').replaceChildren();for(const r of RECIPES){const b=document.createElement('button');const made=state.crafted.includes(r.id);b.textContent=made?`${r.name} · unlocked`:`Craft ${r.name} — ${Object.entries(r.cost).map(([k,n])=>`${n} ${k}`).join(', ')}`;b.disabled=made;b.onclick=()=>{try{toast(craft(state,r.id));clearHistory();save();}catch(e){toast(e.message);}};$('recipes').append(b);}
+window.addEventListener('hashchange',route);
+
+/* ---------- views ---------- */
+function header(title,back){
+  const h=el('header','top');
+  if(back){const b=el('button','icon back');b.setAttribute('aria-label','Back');b.innerHTML=ico('back');b.onclick=back;h.append(b);}
+  else if(embedded){const b=el('button','icon back');b.setAttribute('aria-label','Back to SPYR');b.innerHTML=ico('back');b.onclick=()=>post({type:'spyr:gym-exit'});h.append(b);}
+  h.append(el('h1','title',esc(title)));
+  return h;
 }
-$('activities-btn').onclick=()=>{renderActivities();$('activities').showModal();};
-$('decorate').onclick=()=>{$('catalog').hidden=!$('catalog').hidden;if($('catalog').hidden)cancel();};$('close-catalog').onclick=()=>{$('catalog').hidden=true;cancel();};$('cancel').onclick=()=>{$('catalog').hidden=true;cancel();};$('rotate').onclick=()=>rotation=1-rotation;
-if(matchMedia('(pointer:coarse)').matches){document.querySelector('.view-controls').classList.add('touch');}$('zoom-in').onclick=()=>renderer.camera.zoom=Math.min(2.3,renderer.camera.zoom*1.2);$('zoom-out').onclick=()=>renderer.camera.zoom=Math.max(.35,renderer.camera.zoom/1.2);$('home').onclick=()=>renderer.fit(!!roomId);
-$('expand').onclick=()=>{try{const next={...state};if(sandbox&&next.expansion<29)next.expansion++;else expand(next);checkpoint();state.expansion=next.expansion;save();toast('A new meadow is yours. Undo will close it again.');}catch(e){toast(e.message);}};$('menu-btn').onclick=()=>{update();$('settings').showModal();};$('demo').onclick=()=>window.SPYRVillage.recordHabitCompletion({id:`demo:${crypto.randomUUID()}`});
-$('export').onclick=()=>{const url=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='spyr-village-v4.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};$('import').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;if(file.size>6e6)throw Error('Choose a save smaller than 6 MB.');state=validateState(JSON.parse(await file.text()));roomId=null;clearHistory();cancel();save();}catch(e){toast(e.message);}finally{$('import').value='';}};
-const pointers=new Map;let drag=null,pinch=null;const pos=e=>{const r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};};
-canvas.addEventListener('pointerdown',e=>{const p=pos(e);canvas.focus({preventScroll:true});canvas.setPointerCapture(e.pointerId);pointers.set(e.pointerId,p);if(pointers.size===1)drag={...p,cx:renderer.camera.x,cy:renderer.camera.y,moved:false};else{drag.moved=true;const[a,b]=[...pointers.values()];pinch={distance:Math.hypot(a.x-b.x,a.y-b.y),zoom:renderer.camera.zoom};}});
-canvas.addEventListener('pointermove',e=>{const p=pos(e);cursor=renderer.tile(p.x,p.y);if(!pointers.has(e.pointerId))return;pointers.set(e.pointerId,p);if(pointers.size>=2){const[a,b]=[...pointers.values()];renderer.camera.zoom=Math.max(.35,Math.min(2.3,pinch.zoom*Math.hypot(a.x-b.x,a.y-b.y)/Math.max(1,pinch.distance)));}else if(drag){const dx=p.x-drag.x,dy=p.y-drag.y;if(Math.hypot(dx,dy)>6)drag.moved=true;if(drag.moved){renderer.camera.x=drag.cx+dx;renderer.camera.y=drag.cy+dy;}}});
-function release(e){if(e.type==='pointerup'&&pointers.size===1&&drag&&!drag.moved&&!pinch)tap(pos(e));pointers.delete(e.pointerId);if(!pointers.size){drag=null;pinch=null;}else{const p=[...pointers.values()][0];drag={...p,cx:renderer.camera.x,cy:renderer.camera.y,moved:true};}}
-canvas.addEventListener('pointerup',release);canvas.addEventListener('pointercancel',release);canvas.addEventListener('wheel',e=>{e.preventDefault();renderer.camera.zoom=Math.max(.35,Math.min(2.3,renderer.camera.zoom*Math.exp(-e.deltaY*.001)));},{passive:false});
-canvas.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Enter','Escape','r','R'].includes(e.key))e.preventDefault();if(e.key==='Escape')cancel();if(e.key.toLowerCase()==='r')rotation=1-rotation;if(e.key==='ArrowUp')cursor.y--;if(e.key==='ArrowDown')cursor.y++;if(e.key==='ArrowLeft')cursor.x--;if(e.key==='ArrowRight')cursor.x++;if(e.key==='Enter')tap(renderer.screen(cursor.x+.5,cursor.y+.5));});
-window.SPYRVillage={setSaveStatus(status){hostSaveStatus=status;$('save-status').textContent=status==='error'?'Your last save did not reach SPYR. Retry when connected.':status==='saving'?'Saving to SPYR…':'Saved to SPYR.';$('retry-save').hidden=status!=='error';},getState:()=>structuredClone(state),loadState(raw){state=validateState(raw);roomId=null;clearHistory();cancel();save();},recordHabitCompletion(event){const old=state.progress,oldCoins=state.economy.coins;if(!award(state,event))return{awarded:false,progress:state.progress};save();const unlocked=CATALOG.filter(d=>!d.recipe&&d.unlock>old&&d.unlock<=state.progress).map(d=>d.id);if(unlocked.length)toast(`${itemById(unlocked[0]).name} unlocked!`);return{awarded:true,progress:state.progress,unlocked};},recordDayPoints(day,points){const add=creditPoints(state,day,points);if(add>0){save();toast(`+${add} copper`);}return add;}};
-if(embedded){document.body.classList.add('embedded');$('demo').hidden=true;$('sandbox-label').hidden=true;$('export').hidden=true;document.querySelector('label[for=import]').hidden=true;}
-update();if(saveError)toast('The previous save could not be loaded. Its original copy is still in browser storage.');
+function ico(n){return{
+  back:'<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  close:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
+  pause:'<svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>',
+  play:'<svg viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z" fill="currentColor"/></svg>',
+  check:'<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  next:'<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+}[n];}
 
-$('homes-btn').onclick=()=>{$('home-list').replaceChildren();for(const o of state.objects.filter(o=>itemById(o.type).home)){const b=document.createElement('button');b.textContent='Enter '+itemById(o.type).name;b.onclick=()=>{$('homes').close();openRoom(o.id);};$('home-list').append(b);}$('homes').showModal();};
+function renderRooms(){
+  view='rooms';document.body.dataset.view=view;root.replaceChildren();
+  root.append(header('SPYR Gym'));
+  const grid=el('div','rooms');
+  for(const c of categories){
+    const n=collection.filter(w=>w.category===c.id).length;
+    const a=el('a','room-card');a.href='#room='+c.id;
+    a.innerHTML=`<img src="${img(c.image)}" alt="" loading="lazy"><div class="room-body"><span class="room-name">${esc(c.name)}</span><span class="muted">${n} session${n===1?'':'s'}</span></div>`;
+    grid.append(a);
+  }
+  root.append(grid);window.scrollTo(0,0);
+}
 
-const sound=createSound();let audioEnabled=false;
-$('world-btn').onclick=()=>{$('village-name').value=state.villageName;for(const k of ['time','weather','season'])$('world-'+k).value=state.world[k];$('world-motion').checked=state.world.motion;$('world-sound').checked=audioEnabled;$('world-settings').showModal();};
-for(const k of ['time','weather','season'])$('world-'+k).onchange=e=>{state.world[k]=e.target.value;save();};
-$('world-motion').onchange=e=>{state.world.motion=e.target.checked;save();};
-$('world-sound').onchange=async e=>{try{await sound.set(e.target.checked);audioEnabled=e.target.checked;state.world.sound=audioEnabled;save();}catch{e.target.checked=false;toast('Audio could not start in this browser.');}};
-$('brush-size').onchange=e=>brushSize=Number(e.target.value);
-$('layouts-btn').onclick=()=>{$('layout-list').replaceChildren();for(const layout of LAYOUTS.filter(l=>l.space===(roomId?'inside':'outside'))){const b=document.createElement('button');b.textContent=layout.name;b.onclick=()=>{cancel();layoutId=layout.id;$('layouts').close();$('catalog').hidden=true;$('hint').textContent='Tap a clear area to place this layout. Escape cancels.';};$('layout-list').append(b);}$('layouts').showModal();};
+function renderRoom(){
+  view='room';document.body.dataset.view=view;root.replaceChildren();
+  const c=categories.find(x=>x.id===roomId);
+  root.append(header(c.name,()=>go('')));
+  const list=el('div','sessions');
+  for(const w of collection.filter(w=>w.category===c.id)){
+    const a=el('a','session-card');a.href='#session='+w.id;
+    const moves=[...new Set(w.entries.map(e=>movements[e.key].name))];
+    a.innerHTML=`<img src="${img(w.background)}" alt="" loading="lazy"><div class="session-body"><span class="session-title">${esc(w.title)}</span><span class="muted">${esc(duration(w))} · ${esc(w.trainerName)}</span></div>`;
+    list.append(a);
+  }
+  root.append(list);window.scrollTo(0,0);
+}
 
-document.addEventListener('visibilitychange',()=>{if(audioEnabled)sound.set(!document.hidden).catch(()=>{});});window.addEventListener('pagehide',()=>sound.destroy());
+function renderIntro(){
+  view='intro';document.body.dataset.view=view;root.replaceChildren();
+  const w=workout;engine=createSession(w);
+  const saved=read(STORE.active,null),resumable=engine.valid(saved)&&saved.workoutId===w.id;
+  const wrap=el('div','intro');
+  wrap.style.setProperty('--bg',`url(${img(w.background)})`);
+  const h=el('header','top over');
+  const b=el('button','icon back');b.setAttribute('aria-label','Back');b.innerHTML=ico('back');b.onclick=()=>go('room='+w.category);h.append(b);
+  wrap.append(h);
+  const sheet=el('div','sheet');
+  const sets=workSteps(w).length;
+  const steps=[...new Set(w.entries.map(e=>e.key))].map(k=>{const e=w.entries.find(x=>x.key===k),m=movements[k];const n=w.entries.filter(x=>x.key===k).length;const rhs=w.mode==='sets'?`${e.sets}×${e.reps}`:`${w.entries.filter(x=>x.key===k).length*(w.rounds||1)}×${e.seconds}s`;return`<li><span>${esc(m.name)}</span><span class="muted">${rhs}</span></li>`;}).join('');
+  sheet.innerHTML=`<h2 class="display">${esc(w.title)}</h2><p class="meta">${esc(duration(w))} · ${sets} ${w.mode==='sets'?'sets':'intervals'} · ${esc(w.trainerName)}</p><ul class="steps">${steps}</ul>`;
+  const actions=el('div','actions');
+  const start=el('button','primary',resumable?'Resume':'Start');start.onclick=()=>startSession(resumable?saved:null);
+  actions.append(start);
+  if(resumable){const fresh=el('button','ghost','Start over');fresh.onclick=()=>{write(STORE.active,null);startSession(null);};actions.append(fresh);}
+  sheet.append(actions);wrap.append(sheet);root.append(wrap);window.scrollTo(0,0);
+}
 
-$('close-meadow').onclick=()=>{try{const next={...state};closeMeadow(next);checkpoint();state.expansion=next.expansion;save();$('world-settings').close();toast('Outer meadow closed. Your habit progress is unchanged.');}catch(e){$('meadow-status').textContent=e.message;}};
+/* ---------- player ---------- */
+let ui={};
+async function startSession(saved){
+  const w=workout;view='play';document.body.dataset.view=view;root.replaceChildren();
+  session=saved??engine.fresh();started=!!saved;confirmLeave=false;
+  const stage=el('div','stage');
+  const canvas=el('canvas','scene');stage.append(canvas);
+  const top=el('header','top over play-top');
+  const close=el('button','icon');close.setAttribute('aria-label','Leave session');close.innerHTML=ico('close');close.onclick=askLeave;
+  const bar=el('div','bar','<i></i>');const elapsed=el('span','elapsed','0:00');
+  top.append(close,bar,elapsed);stage.append(top);
+  const status=el('div','status','Preparing the room…');stage.append(status);
+  const sheet=el('div','sheet play-sheet');
+  sheet.innerHTML=`<div class="row"><span class="phase"></span><button class="icon pause" aria-label="Pause">${ico('pause')}</button></div><h2 class="display move"></h2><p class="cue"></p><div class="row bottom"><div class="big"><strong class="value"></strong><span class="unit"></span></div><div class="btns"></div></div>`;
+  stage.append(sheet);root.append(stage);
+  ui={canvas,bar:bar.firstChild,elapsed,status,phase:sheet.querySelector('.phase'),pause:sheet.querySelector('.pause'),move:sheet.querySelector('.move'),cue:sheet.querySelector('.cue'),value:sheet.querySelector('.value'),unit:sheet.querySelector('.unit'),btns:sheet.querySelector('.btns'),sheet};
+  ui.pause.onclick=togglePause;
+  scene=new CollectionScene(canvas,m=>{status.textContent=m||'';status.hidden=!m;});
+  try{await scene.load(w);status.hidden=true;}catch(e){status.textContent='This room could not load.';}
+  if(!started)await new Promise(r=>setTimeout(r,80));
+  render();startLoop();keepAwake(true);
+}
+function togglePause(){if(!session||session.status!=='active')return;session.paused=!session.paused;keepAwake(!session.paused);render();}
+function startLoop(){last=performance.now();const frame=now=>{const dt=Math.min(1,(now-last)/1000);last=now;if(session&&session.status==='active'){const before=engine.current(session)?.id;engine.tick(session,dt);const cur=engine.current(session);if(session.status==='finished'){finish();return;}if(cur&&cur.id!==before){onStep(cur);render();}else if(cur&&cur.kind!=='lift')updateNumbers();}scene?.update(dt);raf=requestAnimationFrame(frame);};raf=requestAnimationFrame(frame);}
+function stopLoop(){cancelAnimationFrame(raf);raf=0;keepAwake(false);}
+function onStep(p){chime(p.kind==='rest'||p.kind==='cooldown'?'end':'go');save();}
+function save(){if(session&&session.status==='active')write(STORE.active,session);}
+function phaseLabel(p){const side=p.side?` · ${p.side}`:'';if(p.kind==='warmup')return'Warm-up';if(p.kind==='cooldown')return'Cool-down';if(p.kind==='rest')return'Rest';if(workout.mode==='sets')return`Set ${p.set} of ${p.sets}${side}`;const total=workout.rounds||1;return(total>1?`Round ${p.round} of ${total}`:'Work')+side;}
+function updateNumbers(){const p=engine.current(session);if(!p)return;ui.value.textContent=p.kind==='lift'?p.reps:fmt(session.remaining);ui.elapsed.textContent=fmt(session.elapsed);}
+function render(){
+  if(!session||session.status!=='active')return;
+  const p=engine.current(session),m=movements[p.key],stats=engine.stats(session),w=workout;
+  const animate=p.kind==='lift'||p.kind==='work'||(w.audio&&['warmup','cooldown'].includes(p.kind));
+  scene.set(p.key,animate?'work':'rest',session.paused,stats.processed/Math.max(1,stats.total),p.side);
+  ui.bar.style.width=(stats.processed/Math.max(1,stats.total)*100)+'%';
+  ui.phase.textContent=['warmup','cooldown'].includes(p.kind)?workout.trainerName:phaseLabel(p);
+  ui.move.textContent=p.kind==='rest'?'Rest':p.kind==='warmup'?'Warm-up':p.kind==='cooldown'?'Cool-down':m.name;
+  const next=engine.plan[session.index+1];
+  ui.cue.textContent=p.kind==='rest'?(next?`Next: ${movements[next.key].name}`:''):p.kind==='warmup'?`First up: ${m.name}`:p.kind==='cooldown'?'':shortCue(m);
+  ui.unit.textContent=p.kind==='lift'?'reps':'';
+  ui.pause.innerHTML=session.paused?ico('play'):ico('pause');ui.pause.setAttribute('aria-label',session.paused?'Resume':'Pause');
+  ui.sheet.classList.toggle('paused',session.paused);ui.sheet.dataset.kind=p.kind;
+  ui.btns.replaceChildren();
+  if(p.kind==='lift'){const b=el('button','primary',ico('check')+'<span>Done</span>');b.onclick=()=>{engine.advance(session,'complete');after();};ui.btns.append(b);}
+  else if(p.kind==='rest'){const plus=el('button','ghost','+30s');plus.onclick=()=>{session.remaining+=30;updateNumbers();};const skip=el('button','primary','<span>Skip</span>'+ico('next'));skip.onclick=()=>{engine.advance(session,'skip');after();};ui.btns.append(plus,skip);}
+  else{const skip=el('button','ghost',p.kind==='work'?'End early':'Skip');skip.onclick=()=>{engine.advance(session,'skip');after();};ui.btns.append(skip);}
+  updateNumbers();
+}
+function after(){if(session.status==='finished'){finish();return;}onStep(engine.current(session));render();}
+function askLeave(){
+  if(!session||session.status!=='active'){go('room='+workout.category);return;}
+  const wasPaused=session.paused;session.paused=true;render();
+  const m=el('div','modal');m.innerHTML=`<div class="card"><h3 class="display">Leave for now?</h3></div>`;
+  const acts=el('div','actions');const stay=el('button','ghost','Keep going');const leave=el('button','primary','Leave');
+  stay.onclick=()=>{m.remove();session.paused=wasPaused;keepAwake(!wasPaused);render();};
+  leave.onclick=()=>{save();stopLoop();m.remove();go('room='+workout.category);};
+  acts.append(stay,leave);m.firstChild.append(acts);root.append(m);
+}
+function finish(){
+  stopLoop();const w=workout,stats=engine.stats(session);
+  const record={...structuredClone(session),date:new Date().toISOString(),title:w.title,trainer:w.trainer,trainerName:w.trainerName,complete:stats.completed===stats.total,stamp:stats.completed===stats.total?w.stamp:null,elapsed:session.elapsed};
+  let hist=read(STORE.history,[]);if(!Array.isArray(hist))hist=[];hist=hist.filter(h=>h.logId!==record.logId).concat(record).slice(-100);write(STORE.history,hist);write(STORE.active,null);
+  window.dispatchEvent(new CustomEvent('spyr:workout-complete',{detail:structuredClone(record)}));post({type:'spyr:gym-complete',record:structuredClone(record)});
+  chime('end');
+  view='done';document.body.dataset.view=view;
+  const stage=root.querySelector('.stage');if(stage){stage.querySelector('.play-sheet')?.remove();stage.querySelector('.play-top')?.remove();scene?.set(engine.plan.at(-1).key,'rest',true,1);}
+  const sheet=el('div','sheet done');
+  sheet.innerHTML=`<div class="tick">${ico('check')}</div><h2 class="display">${esc(w.title)}</h2><p class="meta">${fmt(session.elapsed)} · ${stats.completed} of ${stats.total} ${w.mode==='sets'?'sets':'intervals'}</p>`;
+  const b=el('button','primary','Finish');b.onclick=()=>go('room='+w.category);
+  const acts=el('div','actions');acts.append(b);sheet.append(acts);(stage||root).append(sheet);
+  session=null;
+}
 
-let resetBackup=null;
-if(!embedded){try{const raw=localStorage.getItem('spyr-village:before-reset');if(raw)resetBackup=validateState(JSON.parse(raw));}catch{}}
-$('reset-open').onclick=()=>{$('world-settings').close();$('settings').close();$('reset-keep').checked=true;$('reset-keep').disabled=embedded;$('reset-note').textContent=embedded?'SPYR habit progress and resources are always kept.':'Uncheck to also clear demo progress, resources and the activity history. Atmosphere settings stay the same.';$('reset-error').textContent='';$('reset-restore').hidden=!resetBackup||embedded;$('restore-note').hidden=!resetBackup||embedded;$('reset-dialog').showModal();};
-$('reset-cancel').onclick=()=>$('reset-dialog').close();
-function displayResetResult(message){roomId=null;clearHistory();cancel();filter='All';$('search').value='';$('catalog').hidden=true;renderer.fit();save();$('reset-dialog').close();toast(message);}
-$('reset-confirm').onclick=()=>{try{const backup=structuredClone(state);if(!embedded)localStorage.setItem('spyr-village:before-reset',JSON.stringify(backup));resetBackup=backup;state=resetVillage(state,embedded||$('reset-keep').checked);displayResetResult('Starter village restored. Your previous village is backed up.');}catch{$('reset-error').textContent='Could not create a backup. Export your village first or free device storage before resetting.';}};
-$('reset-restore').onclick=()=>{if(!resetBackup||embedded)return;state=validateState(structuredClone(resetBackup));displayResetResult('Your village from before the last reset has been restored.');};
-
-$('reset-menu').onclick=()=>$('reset-open').onclick();
-
-$('village-name').onchange=e=>{const name=e.target.value.trim();if(!name){e.target.value=state.villageName;return;}state.villageName=name.slice(0,40);save();};
-function viewMode(enabled){document.body.classList.toggle('view-mode',enabled);$('exit-photo').hidden=!enabled;}
-$('photo-mode').onclick=()=>viewMode(true);$('exit-photo').onclick=()=>viewMode(false);
-$('save-view').onclick=()=>{const link=document.createElement('a');link.download='fernwood-view.png';link.href=canvas.toDataURL('image/png');link.click();};
-setInterval(()=>{const sky=atmosphere(state.world);const period=sky.hour<6?'Moonlit night':sky.hour<9?'Early morning':sky.hour<17?'Afternoon':sky.hour<21?'Golden evening':'Moonlit night';$('world-status').textContent=`${period} · ${sky.weather==='auto'?'Changing skies':sky.weather} · ${state.world.season}`;},2000);
-
-$('exterior').onclick=()=>{const o=scope().objects.find(o=>o.id===selection);if(!o||!itemById(o.type).variants)return;checkpoint();o.variant=((o.variant||0)+1)%itemById(o.type).variants.length;save();};
-
-$('retry-save').onclick=()=>window.dispatchEvent(new CustomEvent('spyr:village-retry'));
-
-const work=mountWork({get:()=>state,commit:()=>{clearHistory();save();},enter:openRoom,toast});
-$('upgrade-building').onclick=()=>work.openUpgrade(selection);
-
-
+/* ---------- boot ---------- */
+route();

@@ -1,4 +1,4 @@
-/* SPYR side tabs — v52.24
+/* SPYR side tabs — v52.28
    Two vertical tabs on the Home screen (SPYR GYM, VILLAGE). Each opens a full-screen
    same-origin iframe. The village saves per SPYR profile with a rolling backup and
    receives real habit completions read through SPYR's own KV store (./config.json). */
@@ -20,7 +20,7 @@
     color:#F3ECE1;box-shadow:-4px 0 18px rgba(0,0,0,.22);cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;
     font:600 12px/1 'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.16em;text-transform:uppercase}
   .spyr-side button.gym{background:#2E6B3F}.spyr-side button.gym:active{background:#255834}
-  .spyr-side button.village{background:#2A5445}.spyr-side button.village:active{background:#1F4033}
+  .spyr-side button.shelf{background:#2E6B3F}.spyr-side button.shelf:active{background:#255834}
   .spyr-side .dot{width:6px;height:6px;border-radius:50%;background:#dcefa3;box-shadow:0 0 8px #dcefa3}
   .spyr-ov{position:fixed;inset:0;z-index:9500;display:none;background:#101b18}
   .spyr-ov.open{display:block}
@@ -38,7 +38,8 @@
   side.className = 'spyr-side';
   side.hidden = true;
   side.innerHTML =
-    '<button type="button" class="gym" aria-label="Open SPYR GYM"><span class="dot"></span><span>SPYR GYM</span></button>';
+    '<button type="button" class="gym" aria-label="Open SPYR GYM"><span class="dot"></span><span>SPYR GYM</span></button>' +
+    '<button type="button" class="shelf" aria-label="Open your shelf"><span class="dot"></span><span>Shelf</span></button>';
   doc.body.append(side);
 
   /* ---------- overlays ---------- */
@@ -79,6 +80,7 @@
     if (!keepFrame) o.frame.removeAttribute('src');
   }
   side.querySelector('.gym').addEventListener('click', () => openOverlay(gym, GYM_URL, '#101b18'));
+  side.querySelector('.shelf').addEventListener('click', () => window.dispatchEvent(new CustomEvent('spyr:open-shelf')));
   gym.close.addEventListener('click', () => closeOverlay(false));
   village.close.addEventListener('click', () => closeOverlay(true)); // village stays mounted; saves are cheap, reloads are not
   window.addEventListener('keydown', e => { if (e.key === 'Escape' && current) closeOverlay(current === village); });

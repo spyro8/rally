@@ -18,3 +18,49 @@ dialog{background:#183b30;color:var(--ink);border:1px solid #98b08066;border-rad
 .view-controls.touch #zoom-in,.view-controls.touch #zoom-out{display:none}.location h1{font-size:26px;margin:0}.location{top:84px}button.danger{background:#7a3a2f;color:#f6e9dd}.progress{cursor:default}
 
 .embedded header .brand{visibility:hidden}
+
+/* v52.25: panels are bottom sheets, the village stays visible */
+dialog{position:fixed;left:50%;bottom:0;top:auto;transform:translateX(-50%);margin:0;width:min(560px,100%);max-height:56dvh;border-radius:22px 22px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -12px 50px #051a1366}
+dialog::backdrop{background:rgba(5,20,15,.18)}
+dialog h2{font-size:20px;margin:4px 0 12px}
+#catalog{top:auto;left:10px;right:10px;width:auto;bottom:calc(74px + env(safe-area-inset-bottom));max-height:42dvh;padding:12px 14px;border-radius:18px}
+#catalog.compact>*:not(.placing){display:none}
+#catalog.compact{max-height:none;padding:8px 12px}
+#catalog.compact .placing{margin:0;padding:6px 0;position:static;border:0;background:transparent}
+.farm-actions{display:flex;gap:8px;margin:12px 0}.farm-actions button{flex:1;padding:12px 0;border-radius:14px;font-weight:700}.farm-actions button:disabled{opacity:.4}
+#host-exit{appearance:none;border:1px solid rgba(243,236,225,.3);background:rgba(16,27,24,.82);color:#F3ECE1;font:700 12px/1 inherit;letter-spacing:.06em;padding:9px 12px;border-radius:99px;cursor:pointer;margin-right:10px}
+.embedded header .brand{visibility:hidden;width:0;overflow:hidden}
+#exit-photo{opacity:1;background:rgba(16,27,24,.82);color:#F3ECE1;border:1px solid rgba(243,236,225,.3);border-radius:99px;padding:10px 16px;font-weight:700}
+@media(max-width:600px){#catalog{max-height:40dvh}dialog{max-height:52dvh}}
+#work-tabs:has(button:only-child){display:none}
+
+
+/* v52.28 — drawn chrome from the SPYR button kit (assets/ui) */
+header .progress,header #photo-mode,header #menu-btn,.view-controls button,#host-exit,.bottom .toolbar,.bottom .toolbar button,dialog,#catalog{background-color:transparent;border:0;box-shadow:none;backdrop-filter:none}
+header #photo-mode,header #menu-btn,.view-controls button{width:46px;height:45px;padding:0;font-size:0;color:transparent;background-repeat:no-repeat;background-size:100% 100%;filter:drop-shadow(0 2px 2px #0006);border-radius:10px;flex:0 0 46px}
+#zoom-in{background-image:url(assets/ui/btn-plus.webp)}#zoom-out{background-image:url(assets/ui/btn-minus.webp)}#home{background-image:url(assets/ui/btn-center.webp)}#menu-btn{background-image:url(assets/ui/btn-menu.webp)}#photo-mode{background-image:url(assets/ui/btn-center.webp);opacity:.001;pointer-events:none;width:0;flex:0 0 0}
+header #menu-btn:active,.view-controls button:active{transform:translateY(1px);filter:drop-shadow(0 1px 1px #0006) brightness(.92)}
+header{display:flex;align-items:center;gap:8px;flex-wrap:nowrap}header>*{flex:0 0 auto}
+header .progress,#host-exit{border-style:solid;border-width:13px 20px;border-image:url(assets/ui/plaque-brown.webp) 40 60 fill / 13px 20px stretch;color:#f3e6c8;font-weight:700;padding:1px 2px;min-height:0;line-height:1.1;filter:drop-shadow(0 2px 2px #0006);white-space:nowrap;font-size:11px}
+header .progress .seed{display:none}
+/* bottom bar: three plaques, the selected one turns green; ivy sprig sits on the corner */
+.bottom .toolbar{position:relative;display:flex;gap:8px;padding:6px 6px 8px 8px;filter:drop-shadow(0 4px 6px #0007)}
+.bottom .toolbar button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-weight:700;color:#e9d9b5;font-size:13px;padding:6px 0 4px;min-height:56px;border-style:solid;border-width:16px 22px;border-image:url(assets/ui/plaque-dark.webp) 46 70 fill / 16px 22px stretch;text-shadow:0 1px 0 #0008;transition:filter .12s}
+.bottom .toolbar button:before{content:'';width:28px;height:24px;background:no-repeat center/contain;filter:drop-shadow(0 1px 0 #0006)}
+#decorate:before{background-image:url(assets/ui/icon-home.webp)}#work-btn:before{background-image:url(assets/ui/icon-wheat.webp)}#world-btn:before{background-image:url(assets/ui/icon-globe.webp)}
+.bottom .toolbar button.primary,.bottom .toolbar button.active,.bottom .toolbar button[aria-pressed=true]{border-image:url(assets/ui/plaque-green.webp) 46 70 fill / 16px 22px stretch;color:#f6f0dc}
+.bottom .toolbar button:active{filter:brightness(.9)}
+/* parchment sheets */
+dialog,#catalog{border-style:solid;border-width:22px 26px;border-image:url(assets/ui/bar-parchment.webp) 60 64 fill / 22px 26px stretch;color:#3d2f1c;border-radius:0;filter:drop-shadow(0 -6px 14px #0005)}
+dialog{padding:8px 4px calc(10px + env(safe-area-inset-bottom));max-height:56dvh}#catalog{padding:6px 6px 8px}
+dialog h2,#catalog h2{color:#3d2f1c;font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:20px;margin:0 0 10px}
+dialog label,dialog p,dialog .small,#catalog p,#catalog label,#work-coins,#work-message,#meadow-status,#next-unlock,#save-status{color:#5f4a2c}
+dialog select,dialog input,#catalog input{background:#fff9ea;color:#3d2f1c;border:1px solid #b9a072;border-radius:8px}
+dialog button,#catalog button,#items button,.editor-actions button,.placing button{background:#fff9ea;color:#3d2f1c;border:1px solid #b9a072;border-radius:10px;font-weight:700}
+dialog button.primary,#catalog button.active,#filters button.active,#work-tabs button.active,.farm-actions button:not(:disabled){background:#3f5f36;color:#f3e6c8;border-color:#243a1f}
+button.danger{background:#7a3a2f;color:#f6e9dd;border-color:#4a2019}
+.dialog-close,#close-catalog{width:36px;height:35px;font-size:0;color:transparent;background:url(assets/ui/btn-close.webp) no-repeat center/100% 100%!important;border:0!important;padding:0}
+.placing{background:transparent;border-top:1px solid #b9a072;color:#3d2f1c}
+body:has(dialog[open]) main,body:has(dialog[open]) header{filter:none!important}dialog::backdrop{background:rgba(20,12,4,.22);backdrop-filter:none}
+.host-back{display:none}#work-tabs:has(button:only-child){display:none}
+@media(max-width:600px){header #menu-btn,.view-controls button{width:42px;height:41px;flex-basis:42px}.bottom .toolbar button{font-size:12px;min-height:54px}}
