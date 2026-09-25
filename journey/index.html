@@ -501,10 +501,13 @@ const iconImg = (k, size = 16) => `<img class="pxi" src="${ICON_URL[k].url}" wid
 const cv = $('#scene'), main = cv.getContext('2d');
 const buf = document.createElement('canvas'), bx = buf.getContext('2d');
 let VW = 180, HX = 70;
+const SS = 2;                                                   // sub-steps per art pixel
+const snap = (v) => Math.round(v * SS) / SS;
 function fit() {
   const st = $('#stage'); const w = st.clientWidth, h = st.clientHeight;
-  VW = Math.max(120, Math.round(NH * w / h)); cv.width = buf.width = VW; cv.height = buf.height = NH;
-  HX = Math.round(VW * 0.38); main.imageSmoothingEnabled = bx.imageSmoothingEnabled = false; drawRibbon();
+  VW = Math.max(120, Math.round(NH * w / h)); cv.width = buf.width = VW * SS; cv.height = buf.height = NH * SS;
+  for (const c of [main, bx]) { c.setTransform(SS, 0, 0, SS, 0, 0); c.imageSmoothingEnabled = false; }
+  HX = Math.round(VW * 0.38); drawRibbon();
 }
 addEventListener('resize', fit);
 function hashf(n) { n = Math.imul(n | 0, 374761393) + 668265263; n = Math.imul(n ^ (n >>> 13), 1274126177); return ((n ^ (n >>> 16)) >>> 0) / 4294967296; }
@@ -567,29 +570,32 @@ function segments(s) {
 }
 function tile(ctx, key, z, s) {
   const K = kitOf(z), base = G.layers[K + key]; if (!base) return; const alt = key === '4' ? G.layers[K + '4b'] : null, off = camM * PPM * s;
-  for (let k = Math.floor((off - HX) / 384) - 1; ; k++) { const x = Math.round(HX - off + k * 384); if (x > VW) break; ctx.drawImage(alt && hash(k * 7 + z.charCodeAt(0)) > .5 ? alt : base, x, 0); }
+  for (let k = Math.floor((off - HX) / 384) - 1; ; k++) { const x = snap(HX - off + k * 384); if (x > VW) break; ctx.drawImage(alt && hash(k * 7 + z.charCodeAt(0)) > .5 ? alt : base, x, 0); }
 }
 function drawLayer(ctx, key, s) {
-  const segs = segments(s);
+  const raw = segments(s), segs = [];
+  for (const sg of raw) { const last = segs[segs.length - 1]; if (last && kitOf(last[2]) === kitOf(sg[2])) last[1] = sg[1]; else segs.push([...sg]); }   // same art on both sides: no blend needed
   for (let i = 0; i < segs.length; i++) {
     const [a, b, z] = segs[i], left = i > 0 ? Math.round(a - BAND / 2) : -1, right = i < segs.length - 1 ? Math.round(b + BAND / 2) : VW + 1;
-    if (left < 0) { ctx.save(); ctx.beginPath(); ctx.rect(0, 0, Math.max(0, Math.min(VW, right)), NH); ctx.clip(); tile(ctx, key, z, s); ctx.restore(); continue; }
-    if (tmp.width !== VW) { tmp.width = maskC.width = VW; tmp.height = maskC.height = NH; tx.imageSmoothingEnabled = false; }
-    tx.globalCompositeOperation = 'source-over'; tx.clearRect(0, 0, VW, NH); tile(tx, key, z, s);
-    mx.clearRect(0, 0, VW, NH); mx.drawImage(ramp(), left, 0); mx.fillStyle = '#000'; mx.fillRect(left + BAND, 0, VW, NH);
-    tx.globalCompositeOperation = 'destination-in'; tx.drawImage(maskC, 0, 0); tx.globalCompositeOperation = 'source-over';
-    ctx.save(); ctx.beginPath(); ctx.rect(Math.max(0, left), 0, Math.max(0, Math.min(VW, right) - Math.max(0, left)), NH); ctx.clip(); ctx.drawImage(tmp, 0, 0); ctx.restore();
+    const solidFrom = left < 0 ? 0 : left + BAND;
+    if (right > solidFrom) { ctx.save(); ctx.beginPath(); ctx.rect(Math.max(0, solidFrom), 0, Math.max(0, Math.min(VW, right) - Math.max(0, solidFrom)), NH); ctx.clip(); tile(ctx, key, z, s); ctx.restore(); }
+    if (left < 0 || left >= VW || left + BAND <= 0) continue;
+    /* the dithered hand-over: only the narrow band between the two stretches goes through the mask */
+    if (tmp.width !== VW * SS) { tmp.width = VW * SS; tmp.height = NH * SS; tx.setTransform(SS, 0, 0, SS, 0, 0); tx.imageSmoothingEnabled = false; }
+    tx.save(); tx.beginPath(); tx.rect(left, 0, BAND, NH); tx.clip(); tx.clearRect(left, 0, BAND, NH); tile(tx, key, z, s);
+    tx.globalCompositeOperation = 'destination-in'; tx.drawImage(ramp(), left, 0); tx.restore();
+    ctx.drawImage(tmp, left * SS, 0, BAND * SS, NH * SS, left, 0, BAND, NH);
   }
 }
 function drawLandmarks(ctx) {
-  for (const lm of LMS) { const x = mi(camM); if (x < lm.span[0] || x > lm.span[1]) continue; ctx.drawImage(G.layers[lm.key], Math.round(HX + (lm.at * MI - camM) * PPM * lm.s - lm.cx + VW * .1), 0); }
+  for (const lm of LMS) { const x = mi(camM); if (x < lm.span[0] || x > lm.span[1]) continue; ctx.drawImage(G.layers[lm.key], snap(HX + (lm.at * MI - camM) * PPM * lm.s - lm.cx + VW * .1), 0); }
 }
 function drawProps(ctx) {
   const wx = camM * PPM, B = 64;
   for (let b = Math.floor((wx - HX) / B) - 3; b * B < wx - HX + VW + 80; b++) {
     if (hash(b * 3 + 17) > .42) continue;
     const list = G.props[kitOf(zoneOf(b * B / PPM))]; if (!list) continue; const p = list[Math.floor(hash(b * 5 + 3) * list.length)]; if (!p || !p.i) continue;
-    ctx.drawImage(p.i, Math.round(HX + b * B + hash(b * 7) * 30 - wx - p.i.width / 2), 207 - p.i.height);
+    ctx.drawImage(p.i, snap(HX + b * B + hash(b * 7) * 30 - wx - p.i.width / 2), 207 - p.i.height);
   }
 }
 const zoneOf = (m) => ZONES.find((z) => Math.max(0, m) >= z.from && Math.max(0, m) < z.to).id;
@@ -598,11 +604,11 @@ function drawFG(ctx) {
   for (let b = Math.floor((wx - HX) / B) - 1; b * B < wx - HX + VW + 200; b++) {
     if (hash(b * 9 + 41) > .55) continue;
     const list = G.fg[kitOf(zoneOf(b * B / (PPM * s)))]; if (!list) continue; const p = list[Math.floor(hash(b * 13 + 2) * list.length)]; if (!p || !p.i) continue;
-    ctx.drawImage(p.i, Math.round(HX + b * B + hash(b * 3) * 120 - wx), NH + 6 - p.i.height);
+    ctx.drawImage(p.i, snap(HX + b * B + hash(b * 3) * 120 - wx), NH + 6 - p.i.height);
   }
 }
 function sprite(ctx, sp, n, x, y, flip) {
-  const L = sp.order ? sp.order.length : sp.n, f = sp.order ? sp.order[((n % L) + L) % L] : ((n % L) + L) % L; x = Math.round(x); y = Math.round(y);
+  const L = sp.order ? sp.order.length : sp.n, f = sp.order ? sp.order[((n % L) + L) % L] : ((n % L) + L) % L; x = snap(x); y = snap(y);
   if (flip) { ctx.save(); ctx.translate(x + sp.fw, 0); ctx.scale(-1, 1); ctx.drawImage(sp.i, f * sp.fw, 0, sp.fw, sp.fh, 0, y, sp.fw, sp.fh); ctx.restore(); }
   else ctx.drawImage(sp.i, f * sp.fw, 0, sp.fw, sp.fh, x, y, sp.fw, sp.fh);
 }
@@ -682,11 +688,11 @@ function render(t) {
   drawProps(bx); drawAnimals(bx, t, wxn);
   const H = G.spr.H1, S = G.spr.H2;
   if (isCamp(h)) { const B3 = G.spr.H3b, F3 = G.spr.H3c; sprite(bx, B3, 0, HX - B3.fw / 2, WALK_Y - B3.base); sprite(bx, F3, Math.floor(t * F3.fps), HX - F3.fw / 2 + 21, WALK_Y - F3.base); }
-  else if (walking) sprite(bx, H, Math.floor(camM * PPM / 4), HX - H.fw / 2, WALK_Y - H.base);
+  else if (walking) sprite(bx, H, Math.floor(camM * PPM / 3.2), HX - H.fw / 2, WALK_Y - H.base);
   else if (!jr && loop.phase !== 'walk') sprite(bx, G.spr.H3a, 0, HX - 24, WALK_Y - G.spr.H3a.base);
   else sprite(bx, S, 0, HX - S.fw / 2, WALK_Y - S.base);
   drawLayer(bx, '6', 1.15); drawFG(bx);
-  tint(bx, h, wxn); main.drawImage(buf, 0, 0);
+  tint(bx, h, wxn); main.drawImage(buf, 0, 0, VW, NH);
   precip(main, t, wxn);
   if (wxn === 'storm') { if (t > nextFlash) { flash = 1; nextFlash = t + 5 + hash(Math.floor(t)) * 7; } if (flash > 0) { main.fillStyle = `rgba(235,240,255,${(flash * .55).toFixed(2)})`; main.fillRect(0, 0, VW, NH); flash = Math.max(0, flash - .06); } }
   const camp = isCamp(h);
