@@ -957,7 +957,7 @@ class CollectionScene{
 return {CollectionScene};
 })();
 modules[23]=(()=>{
-const {categories,collection,movements,duration,workSteps}=modules[6];
+const {categories,collection,movements,duration,workSteps,makePlan}=modules[6];
 const {createSession}=modules[7];
 const {CollectionScene}=modules[22];
 
@@ -1019,31 +1019,42 @@ function ico(n){return{
   next:'<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
 }[n];}
 
+const LODGE='assets/lodge/';
+const GROUPS=[['Strength',['gym','heavy']],['Conditioning',['athletic','bodyweight']],['Recovery',['pilates','yoga']],['Outdoors',['run','bike']]];
+function lodgeBanner(name){const b=el('div','lodge-banner');b.innerHTML=`<img src="${LODGE}B-${name}.png" alt="">`;return b;}
+function lodgeFerns(){const f=el('div','lodge-ferns');f.setAttribute('aria-hidden','true');f.innerHTML=`<img src="${LODGE}fern-left.png" alt=""><img src="${LODGE}fern-right.png" alt="">`;return f;}
+function sectionLabel(t){const d=el('div','lodge-label');d.innerHTML=`<span>${esc(t)}</span><i></i>`;return d;}
 function renderRooms(){
   view='rooms';document.body.dataset.view=view;root.replaceChildren();
   root.append(header('SPYR Gym'));
-  const grid=el('div','rooms');
+  root.append(lodgeBanner('home'));
+  {const r=resumeCard();if(r)root.append(r);}
+  root.append(sectionLabel('Explore'));
+  const grid=el('div','lodge-grid');
   for(const c of categories){
     const n=collection.filter(w=>w.category===c.id).length;
-    const a=el('a','room-card');a.href='#room='+c.id;
-    a.innerHTML=`<img src="${img(c.image)}" alt="" loading="lazy"><div class="room-body"><span class="room-name">${esc(c.name)}</span><span class="muted">${n} session${n===1?'':'s'}</span></div>`;
+    const a=el('a','lodge-cat');a.href='#room='+c.id;
+    a.innerHTML=`<img class="ico" src="${LODGE}cat-${c.id}.png" alt=""><span class="txt"><span class="nm">${esc(c.name)}</span><span class="ct">${n} session${n===1?'':'s'}</span></span>`;
     grid.append(a);
   }
-  root.append(grid);window.scrollTo(0,0);
+  root.append(grid,lodgeFerns());window.scrollTo(0,0);
 }
 
 function renderRoom(){
   view='room';document.body.dataset.view=view;root.replaceChildren();
   const c=categories.find(x=>x.id===roomId);
   root.append(header(c.name,()=>go('')));
-  const list=el('div','sessions');
-  for(const w of collection.filter(w=>w.category===c.id)){
-    const a=el('a','session-card');a.href='#session='+w.id;
-    const moves=[...new Set(w.entries.map(e=>movements[e.key].name))];
-    a.innerHTML=`<img src="${img(w.background)}" alt="" loading="lazy"><div class="session-body"><span class="session-title">${esc(w.title)}</span><span class="muted">${esc(duration(w))} · ${esc(w.trainerName)}</span></div>`;
+  root.append(lodgeBanner(c.id));
+  const ws=collection.filter(w=>w.category===c.id),ps=pausedSession();
+  root.append(sectionLabel(`${ws.length} session${ws.length===1?'':'s'}`));
+  const list=el('div','lodge-list');
+  for(const w of ws){
+    const a=el('a','lodge-wo'+(ps&&ps.w.id===w.id?' paused':''));a.href='#session='+w.id;
+    const sets=workSteps(w).length;
+    a.innerHTML=`<img class="ico" src="${LODGE}wo-${w.id}.png" alt=""><span class="txt"><span class="nm">${esc(w.title)}</span><span class="mt">${esc(duration(w))} · ${sets} ${w.mode==='sets'?'sets':'intervals'}</span><span class="tr">${ps&&ps.w.id===w.id?`Paused · ${esc(ps.where)}`:esc(w.trainerName)}</span></span><span class="chev" aria-hidden="true">\u203a</span>`;
     list.append(a);
   }
-  root.append(list);window.scrollTo(0,0);
+  root.append(list,lodgeFerns());window.scrollTo(0,0);
 }
 
 function renderIntro(){
@@ -1066,6 +1077,45 @@ function renderIntro(){
   sheet.append(actions);wrap.append(sheet);root.append(wrap);window.scrollTo(0,0);
 }
 
+
+/* ---------- pixel emblems for the rooms (16×16), and the paused-session helper ---------- */
+const EP={k:'#3a2c1a',g:'#8d96a0',G:'#5d6570',w:'#f3ead2',b:'#7a5230',B:'#4e331c',r:'#b5533c',o:'#d9892f',y:'#e9c25a',n:'#5c8a44',N:'#3f6632',p:'#b98bb8',s:'#6fa2c8',S:'#3d6f96'};
+const EMBLEMS={
+ gym:['................','................','.GG..........GG.','.GGg........gGG.','GGGg........gGGG','GGGgkkkkkkkkgGGG','GGGgggggggggggGG','GGGgkkkkkkkkgGGG','GGGg........gGGG','.GGg........gGG.','.GG..........GG.','................','................','................','................','................'],
+ heavy:['................','.kk..........kk.','.kk..........kk.','kkkk........kkkk','kGGk........kGGk','kGGk........kGGk','kGGkgggggggggkGG','kGGkgggggggggkGG','kGGk........kGGk','kGGk........kGGk','kkkk........kkkk','.kk..........kk.','.kk..........kk.','................','................','................'],
+ athletic:['..........bb....','..........bb....','..........bb....','..bbbbbbbbbb....','..b.......bb....','..b.......bb....','..b....ww.bb....','..b...wwww.b....','..b....ww..b....','..b...wrrw.b....','..b..w.rr.wb....','..b....rr..b....','..b...r..r.b....','..b..r....rb....','bbbbbbbbbbbbbbbb','BBBBBBBBBBBBBBBB'],
+ bodyweight:['.........yy.....','........yy......','.......yy.......','......yyyyyy....','.....yyyyyy.....','........yy......','.......yy.......','......yy........','.....yy.........','................','...rr......rr...','..rrrr....rrrr..','..rrrr....rrrr..','...rr......rr...','................','................'],
+ pilates:['................','................','................','................','................','......pppppp....','....pppppppppp..','...ppwwwwwwwwpp.','..ppwppppppppwpp','..ppwpBBBBBBpwpp','..ppwppppppppwpp','...ppwwwwwwwwpp.','....pppppppppp..','......pppppp....','................','................'],
+ yoga:['................','.......nn.......','......nnnn......','......nNNn......','..n...nNNn...n..','..nn..nNNn..nn..','..nNn.nNNn.nNn..','...nNnnNNnnNn...','...nnNnNNnNnn...','....nnNNNNnn....','.....nnNNnn.....','nnnnnnnnnnnnnnnn','.NNNNNNNNNNNNNN.','................','................','................'],
+ run:['................','................','................','.........rr.....','........rrrr....','.......rrrrr....','......rrrrrr....','.....rrrrrrrr...','...rrrrrrrrrrr..','..rrrrrrrrrrrrr.','..rrrrrrrrrrrrrr','..wwwwwwwwwwwwww','..kkkkkkkkkkkkkk','................','................','................'],
+ bike:['................','................','.........kk.....','.........k.kk...','....kkkk.k......','.......k.k......','......kkkkk.....','.kkk.k.k...kkk..','k...k..k..k...k.','k...kkkk..k...k.','k...k.....k...k.','.kkk.......kkk..','................','................','................','................'],
+};
+const _emb={};
+function emblem(id){if(_emb[id])return _emb[id];const rows=EMBLEMS[id]||EMBLEMS.gym,c=document.createElement('canvas');c.width=16;c.height=16;const x=c.getContext('2d');rows.forEach((r,y)=>[...r].forEach((ch,i)=>{if(ch!=='.'){x.fillStyle=EP[ch];x.fillRect(i,y,1,1);}}));return(_emb[id]=c.toDataURL());}
+function pausedSession(){
+  const s=read(STORE.active,null);if(!s)return null;const w=collection.find(x=>x.id===s.workoutId);if(!w)return null;
+  const e=createSession(w);if(!e.valid(s))return null;const plan=makePlan(w),p=plan[s.index],m=movements[p.key];
+  const where=p.kind==='rest'?`Resting before ${m?m.name:'the next set'}`:p.set?`Set ${p.set} of ${p.sets} · ${m?m.name:''}`:(m?m.name:'');
+  const done=s.records.filter(r=>r.complete).length;
+  return{w,s,where,done,total:workSteps(w).length};
+}
+function resumeCard(){
+  const a=pausedSession();if(!a)return null;
+  const c=el('div','lodge-resume');
+  c.innerHTML=`<img class="ico" src="${LODGE}wo-${a.w.id}.png" alt=""><span class="txt"><span class="kk">Paused workout</span><span class="nm">${esc(a.w.title)}</span><span class="mt">${esc(a.where)} · ${a.done} of ${a.total} done</span></span>`;
+  const acts=el('div','resume-acts');const go1=el('button','primary','Resume');go1.onclick=()=>go('session='+a.w.id);
+  const drop=el('button','linkish','Discard');drop.onclick=()=>{write(STORE.active,null);route();};acts.append(go1,drop);c.append(acts);return c;
+}
+
+
+/* ---------- placeholder workout music (generated live; real tracks can replace it later) ---------- */
+const MUSIC=globalThis.SPYRMusic?globalThis.SPYRMusic.create():null;globalThis.__gymMusic=MUSIC;
+let musicOn=read('spyr-gym:music',true)!==false;
+const musicMode=c=>({yoga:'calm',pilates:'calm',run:'cardio',bike:'cardio'})[c]||'drive';
+const spkIcon=on=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/>${on?'<path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>':'<path d="M17 9l5 6M22 9l-5 6"/>'}</svg>`;
+function musicStart(){if(!MUSIC)return;MUSIC.set({mode:musicMode(workout.category),intensity:1});MUSIC.setMuted(!musicOn);MUSIC.start();}
+function musicStop(f){try{MUSIC&&MUSIC.stop(f);}catch{}}
+
 /* ---------- player ---------- */
 let ui={};
 async function startSession(saved){
@@ -1076,7 +1126,8 @@ async function startSession(saved){
   const top=el('header','top over play-top');
   const close=el('button','icon');close.setAttribute('aria-label','Leave session');close.innerHTML=ico('close');close.onclick=askLeave;
   const bar=el('div','bar','<i></i>');const elapsed=el('span','elapsed','0:00');
-  top.append(close,bar,elapsed);stage.append(top);
+  const snd=el('button','icon sound');snd.setAttribute('aria-label','Music on or off');snd.innerHTML=spkIcon(musicOn);snd.onclick=()=>{musicOn=!musicOn;write('spyr-gym:music',musicOn);snd.innerHTML=spkIcon(musicOn);if(MUSIC){MUSIC.setMuted(!musicOn);if(musicOn&&!MUSIC.playing)musicStart();}};
+  top.append(close,bar,elapsed,snd);stage.append(top);musicStart();
   const status=el('div','status','Preparing the room…');stage.append(status);
   const sheet=el('div','sheet play-sheet');
   sheet.innerHTML=`<div class="row"><span class="phase"></span><button class="icon pause" aria-label="Pause">${ico('pause')}</button></div><h2 class="display move"></h2><p class="cue"></p><div class="row bottom"><div class="big"><strong class="value"></strong><span class="unit"></span></div><div class="btns"></div></div>`;
@@ -1091,12 +1142,13 @@ async function startSession(saved){
 function togglePause(){if(!session||session.status!=='active')return;session.paused=!session.paused;keepAwake(!session.paused);render();}
 function startLoop(){last=performance.now();const frame=now=>{const dt=Math.min(1,(now-last)/1000);last=now;if(session&&session.status==='active'){const before=engine.current(session)?.id;engine.tick(session,dt);const cur=engine.current(session);if(session.status==='finished'){finish();return;}if(cur&&cur.id!==before){onStep(cur);render();}else if(cur&&cur.kind!=='lift')updateNumbers();}scene?.update(dt);raf=requestAnimationFrame(frame);};raf=requestAnimationFrame(frame);}
 function stopLoop(){cancelAnimationFrame(raf);raf=0;keepAwake(false);}
-function onStep(p){chime(p.kind==='rest'||p.kind==='cooldown'?'end':'go');save();}
+function onStep(p){chime(p.kind==='rest'||p.kind==='cooldown'?'end':'go');save();try{MUSIC&&MUSIC.set({intensity:p.kind==='rest'||p.kind==='cooldown'?.6:1});}catch{}}
 function save(){if(session&&session.status==='active')write(STORE.active,session);}
 function phaseLabel(p){const side=p.side?` · ${p.side}`:'';if(p.kind==='warmup')return'Warm-up';if(p.kind==='cooldown')return'Cool-down';if(p.kind==='rest')return'Rest';if(workout.mode==='sets')return`Set ${p.set} of ${p.sets}${side}`;const total=workout.rounds||1;return(total>1?`Round ${p.round} of ${total}`:'Work')+side;}
 function updateNumbers(){const p=engine.current(session);if(!p)return;ui.value.textContent=p.kind==='lift'?p.reps:fmt(session.remaining);ui.elapsed.textContent=fmt(session.elapsed);}
 function render(){
   if(!session||session.status!=='active')return;
+  try{if(MUSIC){if(session.paused)MUSIC.suspend();else MUSIC.resume();}}catch{}
   const p=engine.current(session),m=movements[p.key],stats=engine.stats(session),w=workout;
   const animate=p.kind==='lift'||p.kind==='work'||(w.audio&&['warmup','cooldown'].includes(p.kind));
   scene.set(p.key,animate?'work':'rest',session.paused,stats.processed/Math.max(1,stats.total),p.side);
@@ -1118,14 +1170,15 @@ function after(){if(session.status==='finished'){finish();return;}onStep(engine.
 function askLeave(){
   if(!session||session.status!=='active'){go('room='+workout.category);return;}
   const wasPaused=session.paused;session.paused=true;render();
-  const m=el('div','modal');m.innerHTML=`<div class="card"><h3 class="display">Leave for now?</h3></div>`;
-  const acts=el('div','actions');const stay=el('button','ghost','Keep going');const leave=el('button','primary','Leave');
+  const m=el('div','modal');m.innerHTML=`<div class="card"><h3 class="display">Pause workout?</h3><p>Your progress is saved. Come back any time and pick up right where you left off.</p></div>`;
+  const acts=el('div','actions');const stay=el('button','ghost','Keep going');const leave=el('button','primary','Pause & leave');
+  const end=el('button','linkish','End workout without saving');end.onclick=()=>{write(STORE.active,null);musicStop();stopLoop();m.remove();go('room='+workout.category);};
   stay.onclick=()=>{m.remove();session.paused=wasPaused;keepAwake(!wasPaused);render();};
-  leave.onclick=()=>{save();stopLoop();m.remove();go('room='+workout.category);};
-  acts.append(stay,leave);m.firstChild.append(acts);root.append(m);
+  leave.onclick=()=>{save();musicStop();stopLoop();m.remove();go('room='+workout.category);};
+  acts.append(stay,leave);m.firstChild.append(acts,end);root.append(m);
 }
 function finish(){
-  stopLoop();const w=workout,stats=engine.stats(session);
+  musicStop(2);stopLoop();const w=workout,stats=engine.stats(session);
   const record={...structuredClone(session),date:new Date().toISOString(),title:w.title,trainer:w.trainer,trainerName:w.trainerName,complete:stats.completed===stats.total,stamp:stats.completed===stats.total?w.stamp:null,elapsed:session.elapsed};
   let hist=read(STORE.history,[]);if(!Array.isArray(hist))hist=[];hist=hist.filter(h=>h.logId!==record.logId).concat(record).slice(-100);write(STORE.history,hist);write(STORE.active,null);
   window.dispatchEvent(new CustomEvent('spyr:workout-complete',{detail:structuredClone(record)}));post({type:'spyr:gym-complete',record:structuredClone(record)});
@@ -1141,6 +1194,13 @@ function finish(){
 
 /* ---------- boot ---------- */
 route();
+
+setInterval(()=>{try{if(view==='play')save();}catch{}},5000);
+document.addEventListener('visibilitychange',()=>{try{if(document.hidden&&view==='play')save();}catch{}});
+window.addEventListener('pagehide',()=>{try{if(view==='play')save();}catch{}});
+
+document.addEventListener('visibilitychange',()=>{try{if(!MUSIC)return;if(document.hidden)MUSIC.suspend();else if(view==='play'&&session&&!session.paused)MUSIC.resume();}catch{}});
+window.addEventListener('hashchange',()=>{if(view!=='play')musicStop();});
 
 return {};
 })();
