@@ -1,5 +1,5 @@
 // Minimal service worker: cache the shell so the app opens fast / offline banner shows.
-const C = "spyr-v52-31";
+const C = "spyr-v52-31-1";
 self.addEventListener("install", (e) => { self.skipWaiting(); });
 self.addEventListener("activate", (e) => { e.waitUntil(clients.claim()); });
 self.addEventListener("fetch", (e) => {

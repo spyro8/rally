@@ -1,4 +1,4 @@
-/* SPYR side tabs — v52.31
+/* SPYR side tabs — v52.31.1
    Two vertical tabs on the Home screen (Gym, VILLAGE). Each opens a full-screen
    same-origin iframe. The village saves per SPYR profile with a rolling backup and
    receives real habit completions read through SPYR's own KV store (./config.json). */
@@ -15,12 +15,13 @@
   .spyr-side{position:fixed;right:0;top:calc(env(safe-area-inset-top) + 126px);z-index:60;display:flex;flex-direction:column;gap:6px;transition:transform .22s cubic-bezier(.2,.8,.2,1),opacity .18s}
   .spyr-side[hidden]{display:none}
   .spyr-side.away{transform:translateX(110%);opacity:0;pointer-events:none}
-  .spyr-side button{writing-mode:vertical-rl;text-orientation:mixed;display:inline-flex;align-items:center;gap:6px;width:16px;
-    padding:10px 0;justify-content:center;border-radius:9px 0 0 9px;border:0;color:#F3ECE1;background:#2E6B3F;
+  .spyr-side button{writing-mode:vertical-rl;text-orientation:mixed;display:inline-flex;align-items:center;gap:7px;width:24px;
+    padding:14px 0;justify-content:center;border-radius:9px 0 0 9px;border:0;color:#F3ECE1;background:#2E6B3F;
     box-shadow:-2px 1px 8px rgba(0,0,0,.18);cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;
-    font:700 8.5px/1 'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.18em;text-transform:uppercase}
+    font:800 10.5px/1 'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.18em;text-transform:uppercase}
   .spyr-side button:active{background:#255834}
-  .spyr-side .dot{width:3px;height:3px;border-radius:50%;background:#dcefa3;box-shadow:0 0 6px #dcefa3}
+  .spyr-side button{position:relative}.spyr-side button::after{content:'';position:absolute;inset:-4px 0 -4px -12px}
+  .spyr-side .dot{width:4px;height:4px;border-radius:50%;background:#dcefa3;box-shadow:0 0 6px #dcefa3}
   .spyr-ov{position:fixed;inset:0;z-index:9500;display:none;background:#101b18}
   .spyr-ov.open{display:block}
   .spyr-ov iframe{width:100%;height:100%;border:0;display:block;background:inherit}
@@ -105,7 +106,7 @@
   const typing = () => { const a = doc.activeElement; return !!a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName); };
   function sync() {
     side.hidden = !onHome();
-    side.classList.toggle('away', scrolled > 40 || typing() || sheetOpen());
+    side.classList.toggle('away', typing() || sheetOpen());
   }
   let queued = false;
   const later = () => { if (queued) return; queued = true; requestAnimationFrame(() => { queued = false; sync(); }); };
