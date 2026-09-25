@@ -28,7 +28,7 @@ dialog h2{font-size:20px;margin:4px 0 12px}
 #catalog.compact{max-height:none;padding:8px 12px}
 #catalog.compact .placing{margin:0;padding:6px 0;position:static;border:0;background:transparent}
 .farm-actions{display:flex;gap:8px;margin:12px 0}.farm-actions button{flex:1;padding:12px 0;border-radius:14px;font-weight:700}.farm-actions button:disabled{opacity:.4}
-#host-exit{appearance:none;border:1px solid rgba(243,236,225,.3);background:rgba(16,27,24,.82);color:#F3ECE1;font:700 12px/1 inherit;letter-spacing:.06em;padding:9px 12px;border-radius:99px;cursor:pointer;margin-right:10px}
+#host-exit{appearance:none;border:1px solid rgba(243,236,225,.3);background:rgba(16,27,24,.82);color:#F3ECE1;font:700 12px/1 inherit;letter-spacing:.06em;padding:9px 12px;border-radius:99px;cursor:pointer;margin-left:auto}
 .embedded header .brand{visibility:hidden;width:0;overflow:hidden}
 #exit-photo{opacity:1;background:rgba(16,27,24,.82);color:#F3ECE1;border:1px solid rgba(243,236,225,.3);border-radius:99px;padding:10px 16px;font-weight:700}
 @media(max-width:600px){#catalog{max-height:40dvh}dialog{max-height:52dvh}}

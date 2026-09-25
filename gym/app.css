@@ -109,7 +109,7 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--forest);outline-off
 /* ===== The Training Lodge (gym home and room pages) ===== */
 @font-face{font-family:Pixelify;src:url(assets/pixelify.ttf) format("truetype");font-display:swap}
 body[data-view=rooms],body[data-view=room]{background:#F1E7D0;padding-bottom:calc(20px + var(--safe-b))}
-body[data-view=rooms] .top,body[data-view=room] .top{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;min-height:60px}
+body[data-view=rooms] .top,body[data-view=room] .top{display:grid;grid-template-columns:76px 1fr 76px;align-items:center;min-height:60px}
 body[data-view=rooms] .top .title,body[data-view=room] .top .title{grid-column:2;text-align:center;font-family:Pixelify,var(--sans);font-weight:400;font-size:25px;letter-spacing:.01em;color:#1F3A2A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 body[data-view=rooms] .top .icon,body[data-view=room] .top .icon{grid-column:1;grid-row:1;background:none;box-shadow:none;border:0;color:#1F3A2A;width:44px;height:44px}
 .lodge-banner{margin:2px var(--pad) 14px;border-style:solid;border-width:12px;border-image:url(assets/lodge/frame.png) 6 round;image-rendering:pixelated;background:#2a2016}
@@ -146,3 +146,5 @@ body[data-view=rooms] .top .icon,body[data-view=room] .top .icon{grid-column:1;g
 @media (max-width:350px){.lodge-cat .ico{width:44px;height:44px}.lodge-cat .nm{font-size:14.5px}}
 
 .play-top .sound{margin-left:6px}
+
+.spyr-exit{grid-column:3;grid-row:1;justify-self:end;min-height:40px;padding:0 12px;border-radius:99px;font-size:12.5px;font-weight:800;letter-spacing:.04em;color:#F3ECE1;background:#2A5445;border:1px solid #1F4033;box-shadow:0 2px 0 #1F4033;white-space:nowrap}

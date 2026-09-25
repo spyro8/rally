@@ -69,7 +69,7 @@ nav{margin:12px auto 0;gap:14px}nav button{min-width:100px}
 .headline{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .mood{display:flex;gap:4px;margin:0}.mood .face{appearance:none;background:none;border:0;padding:1px;border-radius:99px;cursor:pointer;line-height:0;transition:transform .12s}.mood .face.on{transform:scale(1.18)}.mood .face:active{transform:scale(.92)}.mood .face svg{width:22px;height:22px}
 .quote{margin:2px 0 4px}.quote p{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:11px;line-height:1.35;color:#6b5439;margin:0}.quote small{display:none}
-#host-exit{appearance:none;border:1px solid rgba(60,50,30,.35);background:rgba(45,38,28,.78);color:#F3ECE1;font:700 12px/1 inherit;letter-spacing:.06em;padding:9px 12px;border-radius:99px;cursor:pointer;margin-right:10px}
+#host-exit{appearance:none;border:1px solid rgba(60,50,30,.35);background:rgba(45,38,28,.78);color:#F3ECE1;font:700 12px/1 inherit;letter-spacing:.06em;padding:9px 12px;border-radius:99px;cursor:pointer;margin-left:auto}
 body.embedded header .brand{display:none}
 #body{resize:none}
 

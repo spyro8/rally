@@ -44,8 +44,8 @@ window.addEventListener('hashchange',route);
 function header(title,back){
   const h=el('header','top');
   if(back){const b=el('button','icon back');b.setAttribute('aria-label','Back');b.innerHTML=ico('back');b.onclick=back;h.append(b);}
-  else if(embedded){const b=el('button','icon back');b.setAttribute('aria-label','Back to SPYR');b.innerHTML=ico('back');b.onclick=()=>post({type:'spyr:gym-exit'});h.append(b);}
   h.append(el('h1','title',esc(title)));
+  if(embedded){const x=el('button','spyr-exit','\u2190 SPYR');x.setAttribute('aria-label','Back to SPYR');x.onclick=()=>{try{musicStop();}catch{}post({type:'spyr:gym-exit'});};h.append(x);}
   return h;
 }
 function ico(n){return{

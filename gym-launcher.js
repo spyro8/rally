@@ -1,4 +1,4 @@
-/* SPYR side tabs — v52.34
+/* SPYR side tabs — v52.38
    Two vertical tabs on the Home screen (Gym, VILLAGE). Each opens a full-screen
    same-origin iframe. The village saves per SPYR profile with a rolling backup and
    receives real habit completions read through SPYR's own KV store (./config.json). */
