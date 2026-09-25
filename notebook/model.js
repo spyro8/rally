@@ -1,6 +1,0 @@
-export const blank=()=>({version:1,entries:[]});
-export const localDate=(d=new Date())=>[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
-export function validDate(date){return typeof date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(date)&&Number.isFinite(Date.parse(date+'T12:00:00Z'))&&new Date(date+'T12:00:00Z').toISOString().slice(0,10)===date;}
-export function validate(raw){if(!raw||raw.version!==1||!Array.isArray(raw.entries)||raw.entries.length>5000)throw Error('Invalid notebook.');const ids=new Set;return{version:1,entries:raw.entries.map(e=>{if(!e||typeof e.id!=='string'||!e.id||e.id.length>100||ids.has(e.id)||!validDate(e.date)||typeof e.title!=='string'||e.title.length>160||typeof e.body!=='string'||e.body.length>100000||typeof e.updatedAt!=='string'||!Number.isFinite(Date.parse(e.updatedAt))||(e.mood!=null&&![1,2,3,4,5].includes(e.mood)))throw Error('Invalid journal entry.');ids.add(e.id);return{id:e.id,date:e.date,title:e.title,body:e.body,updatedAt:e.updatedAt,...(e.mood!=null?{mood:e.mood}:{})};})};}
-export const ordered=s=>[...s.entries].sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
-export function upsert(s,entry){const exists=s.entries.some(e=>e.id===entry.id);return validate({version:1,entries:exists?s.entries.map(e=>e.id===entry.id?entry:e):[...s.entries,entry]});}

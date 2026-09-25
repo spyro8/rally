@@ -1,3 +1,0 @@
-// Find transparent horizontal gutters near the nominal row boundaries, per column.
-// Generated atlases can have tall sprites extending a little beyond an equal grid.
-export function rowCuts(alpha,width,height,left,right,rows){const cuts=[0],step=height/rows;for(let row=1;row<rows;row++){const nominal=Math.round(row*step);let best=nominal,score=Infinity;for(let y=Math.max(cuts.at(-1)+1,Math.floor(nominal-step*.18));y<Math.min(height,nominal+step*.18);y++){let occupied=0;for(let x=left;x<right;x++)if(alpha[(y*width+x)*4+3]>32)occupied++;const cost=occupied*1000+Math.abs(y-nominal);if(cost<score){score=cost;best=y;}}cuts.push(best);}cuts.push(height);return cuts;}

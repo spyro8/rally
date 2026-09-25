@@ -1,3 +1,0 @@
-import {canPlace,isGround} from './core.js';
-// Shared by cursor preview and commit so the preview matches what will be placed.
-export function planPlacement(scope,object,brushSize=1,moving=null){const size=isGround(object)&&scope.scope!=='room'&&!moving?brushSize:1;const placed=[];let objects=scope.objects.filter(o=>o.id!==moving);for(let y=0;y<size;y++)for(let x=0;x<size;x++){const o={...object,id:size>1?`${object.id}-${x}-${y}`:object.id,x:object.x+x,y:object.y+y};if(isGround(o))objects=objects.filter(p=>!(isGround(p)&&p.x===o.x&&p.y===o.y));if(!canPlace({...scope,objects},o))return{valid:false,objects:null,placed:[]};objects.push(o);placed.push(o);}return{valid:true,objects,placed};}
