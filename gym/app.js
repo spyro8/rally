@@ -11,7 +11,7 @@ const embedded=window.parent!==window;
 const post=msg=>{if(embedded){try{window.parent.postMessage(msg,location.origin);}catch{}}};
 const img=name=>`assets/${name}.webp`;
 const shortCue=m=>{const c=(m.cue||'').split(/(?<=\.)\s+/)[0]||'';return c.length>90?c.slice(0,87).replace(/\s+\S*$/,'')+'…':c;};
-const STORE={active:'spyr-gym:active',history:'spyr-gym:history'};
+const STORE={active:'spyr-gym:active:v2',history:'spyr-gym:history'};
 const read=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v??d;}catch{return d;}};
 const write=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,JSON.stringify(v));}catch{}};
 

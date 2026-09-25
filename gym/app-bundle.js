@@ -441,7 +441,7 @@ for(const w of collection)for(const e of w.entries){if(['deadbug','dead','bird',
 function getWorkout(id){const w=collection.find(w=>w.id===id);if(!w)throw Error('Unknown session');return w;}
 function makePlan(w){
  const warmKey=w.category==='yoga'?(w.id==='reset'?'matRest':'mountain'):w.category==='pilates'?'matRest':w.category==='bike'?'rideEasy':w.category==='run'?'walk':w.entries[0].key;
- const plan=[{kind:'warmup',seconds:w.warmup,key:warmKey}];
+ const plan=[];
  const add=(e,round,set,side='')=>{plan.push({...e,kind:e.seconds?'work':'lift',round,set,side,seconds:e.seconds??0});if(e.rest>0)plan.push({kind:'rest',seconds:e.rest,key:e.key,round,set,side});};
  const station=(e,round,set)=>{if(movements[e.key].sides){add(e,round,set,'Right side');add(e,round,set,'Left side');}else add(e,round,set,w.id==='boxing'?(round%2?'Left lead':'Right lead'):'');};
  if(w.mode==='sets')for(const e of w.entries)for(let set=1;set<=e.sets;set++)station(e,0,set);
@@ -496,6 +496,13 @@ movements.front.brief='Keep both feet planted. Lower slowly, then stand.';
 movements.bbBench.brief="Lower to your chest. Press smoothly above your shoulders.";
 movements.bbRow.brief="Center your grip. Keep your torso steady as you row.";
 movements.bbPress.brief="Brace, press close, and finish stacked overhead.";
+
+/* v52.29: no warm-ups; rest between sets 60s (90s for heavy barbell work); lifting cool-downs capped at 2 min.
+   Timed sessions (yoga, pilates, cardio, circuits) keep their own short transitions. */
+for(const w of collection){
+  w.warmup=0;
+  if(w.mode==='sets'){for(const e of w.entries)if(e.rest>0)e.rest=w.category==='heavy'?90:60;w.cooldown=Math.min(w.cooldown||0,120);delete w.estimate;}
+}
 
 return {research,movements,categories,collection,getWorkout,makePlan,workSteps,duration};
 })();
@@ -966,7 +973,7 @@ const embedded=window.parent!==window;
 const post=msg=>{if(embedded){try{window.parent.postMessage(msg,location.origin);}catch{}}};
 const img=name=>`assets/${name}.webp`;
 const shortCue=m=>{const c=(m.cue||'').split(/(?<=\.)\s+/)[0]||'';return c.length>90?c.slice(0,87).replace(/\s+\S*$/,'')+'…':c;};
-const STORE={active:'spyr-gym:active',history:'spyr-gym:history'};
+const STORE={active:'spyr-gym:active:v2',history:'spyr-gym:history'};
 const read=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v??d;}catch{return d;}};
 const write=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,JSON.stringify(v));}catch{}};
 

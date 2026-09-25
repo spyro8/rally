@@ -136,7 +136,7 @@ for(const w of collection)for(const e of w.entries){if(['deadbug','dead','bird',
 export function getWorkout(id){const w=collection.find(w=>w.id===id);if(!w)throw Error('Unknown session');return w;}
 export function makePlan(w){
  const warmKey=w.category==='yoga'?(w.id==='reset'?'matRest':'mountain'):w.category==='pilates'?'matRest':w.category==='bike'?'rideEasy':w.category==='run'?'walk':w.entries[0].key;
- const plan=[{kind:'warmup',seconds:w.warmup,key:warmKey}];
+ const plan=[];
  const add=(e,round,set,side='')=>{plan.push({...e,kind:e.seconds?'work':'lift',round,set,side,seconds:e.seconds??0});if(e.rest>0)plan.push({kind:'rest',seconds:e.rest,key:e.key,round,set,side});};
  const station=(e,round,set)=>{if(movements[e.key].sides){add(e,round,set,'Right side');add(e,round,set,'Left side');}else add(e,round,set,w.id==='boxing'?(round%2?'Left lead':'Right lead'):'');};
  if(w.mode==='sets')for(const e of w.entries)for(let set=1;set<=e.sets;set++)station(e,0,set);
@@ -191,3 +191,10 @@ movements.front.brief='Keep both feet planted. Lower slowly, then stand.';
 movements.bbBench.brief="Lower to your chest. Press smoothly above your shoulders.";
 movements.bbRow.brief="Center your grip. Keep your torso steady as you row.";
 movements.bbPress.brief="Brace, press close, and finish stacked overhead.";
+
+/* v52.29: no warm-ups; rest between sets 60s (90s for heavy barbell work); lifting cool-downs capped at 2 min.
+   Timed sessions (yoga, pilates, cardio, circuits) keep their own short transitions. */
+for(const w of collection){
+  w.warmup=0;
+  if(w.mode==='sets'){for(const e of w.entries)if(e.rest>0)e.rest=w.category==='heavy'?90:60;w.cooldown=Math.min(w.cooldown||0,120);delete w.estimate;}
+}

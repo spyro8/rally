@@ -64,3 +64,12 @@ button.danger{background:#7a3a2f;color:#f6e9dd;border-color:#4a2019}
 body:has(dialog[open]) main,body:has(dialog[open]) header{filter:none!important}dialog::backdrop{background:rgba(20,12,4,.22);backdrop-filter:none}
 .host-back{display:none}#work-tabs:has(button:only-child){display:none}
 @media(max-width:600px){header #menu-btn,.view-controls button{width:42px;height:41px;flex-basis:42px}.bottom .toolbar button{font-size:12px;min-height:54px}}
+
+#items button.for-sale small{color:#7a5a1c;font-weight:700}#items button.short{opacity:.55}#build-balance{display:block;font-size:12px;color:#6b5636;margin-top:-6px}
+#photo-mode{display:none!important}
+/* compact placing bar: slim parchment strip with a readable label */
+#catalog.compact{border-width:12px 16px;border-image:url(assets/ui/plaque-parchment.webp) 40 50 fill / 12px 16px stretch;padding:2px 4px;bottom:calc(84px + env(safe-area-inset-bottom))}
+#catalog.compact .placing{display:flex;flex-wrap:nowrap;align-items:center;gap:8px;border-top:0;padding:0}
+#catalog.compact .placing span,.placing span{flex:1 1 auto;flex-basis:auto;color:#3d2f1c;font-weight:700;font-size:12px;margin:0;line-height:1.25}
+.placing span{flex-basis:100%}
+#rotate{white-space:nowrap}

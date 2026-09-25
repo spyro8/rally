@@ -125,12 +125,12 @@ body.embedded .library-summary+span:empty{display:none}
  #notice{position:absolute;left:14px;right:14px;top:calc(var(--offY) + var(--imgH) * .56 + 210px)}
 }
 @media(max-width:700px){
- :root{--S:1.32;--imgH:calc(100dvh * var(--S));--imgW:calc(var(--imgH) * .5625);--offX:calc(50vw - var(--imgW) * .495);--offY:calc(38dvh - var(--imgH) * .415)}
+ :root{--S:1.5;--imgH:calc(100dvh * var(--S));--imgW:calc(var(--imgH) * .5625);--offX:calc(50vw - var(--imgW) * .495);--offY:calc(36dvh - var(--imgH) * .415)}
  main{position:static}
  .cabinet{top:calc(var(--offY) + var(--imgH) * .318);height:calc(var(--imgH) * .212);display:block}
  .cabinet .shelf{position:absolute;left:0;right:0;height:29%}
  #reading{top:2%}#completed{top:35.5%}#collection-slots{top:69%}
  #reading-label{top:-1px}#finished-label{top:33%}#collected-label{top:66.5%}
  .shelf-label h2{font-size:7.5px;padding:1px 5px}
- .book{max-width:26px}
+ .book{max-width:30px}
 }

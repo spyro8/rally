@@ -1,5 +1,5 @@
-/* SPYR side tabs — v52.28
-   Two vertical tabs on the Home screen (SPYR GYM, VILLAGE). Each opens a full-screen
+/* SPYR side tabs — v52.31
+   Two vertical tabs on the Home screen (Gym, VILLAGE). Each opens a full-screen
    same-origin iframe. The village saves per SPYR profile with a rolling backup and
    receives real habit completions read through SPYR's own KV store (./config.json). */
 (() => {
@@ -12,16 +12,15 @@
   /* ---------- styles ---------- */
   const css = doc.createElement('style');
   css.textContent = `
-  .spyr-side{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:9000;display:flex;flex-direction:column;gap:10px;transition:transform .28s cubic-bezier(.2,.8,.2,1),opacity .2s}
+  .spyr-side{position:fixed;right:0;top:calc(env(safe-area-inset-top) + 126px);z-index:60;display:flex;flex-direction:column;gap:6px;transition:transform .22s cubic-bezier(.2,.8,.2,1),opacity .18s}
   .spyr-side[hidden]{display:none}
-  .spyr-side.away{transform:translateY(-50%) translateX(110%);opacity:0;pointer-events:none}
-  .spyr-side button{writing-mode:vertical-rl;text-orientation:mixed;display:inline-flex;align-items:center;gap:10px;
-    padding:16px 10px 16px 11px;border-radius:12px 0 0 12px;border:1px solid rgba(243,236,225,.28);border-right:0;
-    color:#F3ECE1;box-shadow:-4px 0 18px rgba(0,0,0,.22);cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;
-    font:600 12px/1 'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.16em;text-transform:uppercase}
-  .spyr-side button.gym{background:#2E6B3F}.spyr-side button.gym:active{background:#255834}
-  .spyr-side button.shelf{background:#2E6B3F}.spyr-side button.shelf:active{background:#255834}
-  .spyr-side .dot{width:6px;height:6px;border-radius:50%;background:#dcefa3;box-shadow:0 0 8px #dcefa3}
+  .spyr-side.away{transform:translateX(110%);opacity:0;pointer-events:none}
+  .spyr-side button{writing-mode:vertical-rl;text-orientation:mixed;display:inline-flex;align-items:center;gap:6px;width:16px;
+    padding:10px 0;justify-content:center;border-radius:9px 0 0 9px;border:0;color:#F3ECE1;background:#2E6B3F;
+    box-shadow:-2px 1px 8px rgba(0,0,0,.18);cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;
+    font:700 8.5px/1 'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.18em;text-transform:uppercase}
+  .spyr-side button:active{background:#255834}
+  .spyr-side .dot{width:3px;height:3px;border-radius:50%;background:#dcefa3;box-shadow:0 0 6px #dcefa3}
   .spyr-ov{position:fixed;inset:0;z-index:9500;display:none;background:#101b18}
   .spyr-ov.open{display:block}
   .spyr-ov iframe{width:100%;height:100%;border:0;display:block;background:inherit}
@@ -38,8 +37,9 @@
   side.className = 'spyr-side';
   side.hidden = true;
   side.innerHTML =
-    '<button type="button" class="gym" aria-label="Open SPYR GYM"><span class="dot"></span><span>SPYR GYM</span></button>' +
-    '<button type="button" class="shelf" aria-label="Open your shelf"><span class="dot"></span><span>Shelf</span></button>';
+    '<button type="button" class="gym" aria-label="Open Gym"><span class="dot"></span><span>Gym</span></button>' +
+    '<button type="button" class="shelf" aria-label="Open your shelf"><span class="dot"></span><span>Shelf</span></button>' +
+    '<button type="button" class="journey" aria-label="Open Pixel Journey"><span class="dot"></span><span>Journey</span></button>';
   doc.body.append(side);
 
   /* ---------- overlays ---------- */
@@ -56,7 +56,7 @@
     doc.body.append(ov);
     return { ov, frame, close };
   }
-  const gym = makeOverlay('gym', 'SPYR GYM');
+  const gym = makeOverlay('gym', 'Gym');
   const village = makeOverlay('village', 'Your village');
 
   let current = null;
@@ -75,12 +75,13 @@
     const o = current; current = null;
     o.ov.classList.remove('open');
     doc.body.classList.remove('spyr-ov-open');
-    side.classList.remove('away');
     if (meta && meta.dataset.prev) meta.content = meta.dataset.prev;
+    setTimeout(() => { try { sync(); } catch {} }, 0);
     if (!keepFrame) o.frame.removeAttribute('src');
   }
   side.querySelector('.gym').addEventListener('click', () => openOverlay(gym, GYM_URL, '#101b18'));
   side.querySelector('.shelf').addEventListener('click', () => window.dispatchEvent(new CustomEvent('spyr:open-shelf')));
+  side.querySelector('.journey').addEventListener('click', () => window.dispatchEvent(new CustomEvent('spyr:open-journey')));
   gym.close.addEventListener('click', () => closeOverlay(false));
   village.close.addEventListener('click', () => closeOverlay(true)); // village stays mounted; saves are cheap, reloads are not
   window.addEventListener('keydown', e => { if (e.key === 'Escape' && current) closeOverlay(current === village); });
@@ -90,9 +91,29 @@
     const on = doc.querySelector('nav.rnav button.on');
     return !!on && /home/i.test(on.textContent || '');
   }
-  const mo = new MutationObserver(() => { side.hidden = !onHome(); });
-  mo.observe(doc.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
-  side.hidden = !onHome();
+  /* Tabs show only at the top of Home: they step aside while scrolling, while typing,
+     and whenever any sheet or overlay is open, so they never cover a Done button. */
+  let scrolled = 0;
+  function sheetOpen() {
+    if (current) return true;
+    for (const el of doc.querySelectorAll('[style*="position: fixed"],[role="dialog"]')) {
+      if (el.closest('.spyr-side,.spyr-ov')) continue;
+      if (el.offsetWidth >= innerWidth * 0.9 && el.offsetHeight >= innerHeight * 0.6 && getComputedStyle(el).display !== 'none' && getComputedStyle(el).visibility !== 'hidden') return true;
+    }
+    return false;
+  }
+  const typing = () => { const a = doc.activeElement; return !!a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName); };
+  function sync() {
+    side.hidden = !onHome();
+    side.classList.toggle('away', scrolled > 40 || typing() || sheetOpen());
+  }
+  let queued = false;
+  const later = () => { if (queued) return; queued = true; requestAnimationFrame(() => { queued = false; sync(); }); };
+  const mo = new MutationObserver(later);
+  mo.observe(doc.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style'] });
+  window.addEventListener('scroll', (e) => { const t = e.target; scrolled = Math.max(window.scrollY || 0, (t && t !== doc && t.scrollTop) || 0); later(); }, { capture: true, passive: true });
+  doc.addEventListener('focusin', later); doc.addEventListener('focusout', () => setTimeout(later, 50));
+  sync();
 
   /* ---------- SPYR identity + KV (same path the app uses) ---------- */
   function profileId() {
@@ -184,7 +205,7 @@
       if (seen.has(id)) continue;
       try { a.recordHabitCompletion({ id, habit: h, date, at: `${date}T12:00:00.000Z` }); seen.add(id); added++; } catch {}
     }
-    // Gym sessions completed inside SPYR GYM count as workouts too.
+    // Gym sessions completed inside Gym count as workouts too.
     try {
       for (const g of JSON.parse(localStorage.getItem(GYM_STORE) || '[]')) {
         const date = (g.date || '').slice(0, 10); const id = `${pid}:${date}:gym:${g.logId}`;
@@ -225,7 +246,7 @@
         try {
           const rec = d.record;
           const entry = { logId: rec.logId || (rec.date + ':' + (rec.title || 'session')), date: rec.date || new Date().toISOString(),
-            title: rec.title || 'SPYR GYM session', trainer: rec.trainer ?? null, elapsed: Number(rec.elapsed) || 0,
+            title: rec.title || 'Gym session', trainer: rec.trainer ?? null, elapsed: Number(rec.elapsed) || 0,
             complete: !!rec.complete, stamp: rec.stamp ?? null, source: 'spyr-gym' };
           const list = JSON.parse(localStorage.getItem(GYM_STORE) || '[]');
           localStorage.setItem(GYM_STORE, JSON.stringify(list.filter(x => x.logId !== entry.logId).concat(entry).slice(-200)));
