@@ -38,7 +38,14 @@ let hoverTier = -1, hoverPlot = -1, hoverStage = false, filterList = null;
 const cam = {x:0, y:0, s:.4}; let fly = null;
 
 /* ===================== helpers ===================== */
-const loadImg = src => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+/* Images load as WebP; if a device can't decode one, the original PNG/JPG is tried before giving up. */
+const loadOne = src => new Promise((res, rej) => { const i = new Image(); i.onload = () => (i.naturalWidth ? res(i) : rej(new Error('empty image ' + src))); i.onerror = () => rej(new Error('could not load ' + src)); i.src = src; });
+const loadImg = src => loadOne(src).catch(e => /\.webp$/.test(src) ? loadOne(src.replace(/\.webp$/, /sky-/.test(src) ? '.jpg' : '.png')) : Promise.reject(e));
+/* Decorations are optional: a missing one becomes an empty image instead of stopping the town. */
+const blank = () => { const c = document.createElement('canvas'); c.width = c.height = 1; return c; };
+const softImg = src => loadImg(src).catch(e => { console.warn(e); return blank(); });
+if (typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D.prototype.roundRect)
+  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r){ r = Math.min(r, w/2, h/2); this.moveTo(x+r, y); this.arcTo(x+w, y, x+w, y+h, r); this.arcTo(x+w, y+h, x, y+h, r); this.arcTo(x, y+h, x, y, r); this.arcTo(x, y, x+w, y, r); this.closePath(); };
 const dist = (a,b) => Math.hypot(a.x-b.x, a.y-b.y);
 const pick = a => a[Math.floor(Math.random()*a.length)];
 const addN = (x,y,tier,kind) => { const n = {x,y,tier,kind,adj:[]}; nodes.push(n); return n; };
@@ -579,9 +586,9 @@ export async function initWorld(o){
   opts = o; canvas = o.canvas; ctx = canvas.getContext('2d'); labelsEl = o.labels;
   const bkeys = ['work','school','gym','home','money','ideas','gazebo'];
   const pkeys = ['stage-day','stage-night','dock','lily','bench','bench-l','bench-r','lamp-day','lamp-night','planter','flowerbed','board'];
-  const [ims, day, nightImg, bm, pm, bimgs, nights, pimgs] = await Promise.all([Promise.all(TER.map(t => loadImg(t.img))), loadImg('art/sky-day.webp'), loadImg('art/sky-night.webp'),
+  const [ims, day, nightImg, bm, pm, bimgs, nights, pimgs] = await Promise.all([Promise.all(TER.map(t => loadImg(t.img))), loadImg('art/sky-day.webp'), softImg('art/sky-night.webp'),
     fetch('art/buildings.json').then(r => r.json()), fetch('art/props.json').then(r => r.json()),
-    Promise.all(bkeys.map(k => loadImg(`art/b-${k}-day.webp`))), Promise.all(bkeys.map(k => loadImg(`art/b-${k}-night.webp`))), Promise.all(pkeys.map(k => loadImg(`art/p-${k}.webp`)))]);
+    Promise.all(bkeys.map(k => loadImg(`art/b-${k}-day.webp`))), Promise.all(bkeys.map(k => softImg(`art/b-${k}-night.webp`))), Promise.all(pkeys.map(k => softImg(`art/p-${k}.webp`)))]);
   try { CHIBI = await loadImg('art/chibi.webp'); } catch { CHIBI = null; }
   ims.forEach((im,i) => TER[i].im = im); IMG.day = day; IMG.night = nightImg; BMETA = bm; PMETA = pm;
   bkeys.forEach((k,i) => { BIMG[k] = bimgs[i]; BIMG[k+'-night'] = nights[i]; }); pkeys.forEach((k,i) => PIMG[k] = pimgs[i]);

@@ -451,6 +451,12 @@ body.embedded.narrow.world #wtop{top:calc(max(14px,env(safe-area-inset-top)) + 0
 #intro .if{display:flex;align-items:center;gap:8px;margin-top:14px}
 #intro .dots{display:flex;gap:5px}#intro .dots i{width:6px;height:6px;border-radius:9px;background:var(--dim)}#intro .dots i.on{width:18px;background:var(--ink)}
 body.narrow #intro{left:12px;right:12px;width:auto;bottom:max(150px,calc(env(safe-area-inset-bottom) + 144px))}
+#wfail{position:fixed;z-index:15;left:50%;top:50%;transform:translate(-50%,-50%);width:min(380px,calc(100vw - 32px));padding:18px;border-radius:16px;background:var(--paper-solid);box-shadow:0 20px 50px -16px rgba(10,15,30,.5);display:flex;flex-direction:column;gap:8px}
+body:not(.narrow) #wfail{left:calc(50% + 360px)}
+body.narrow:not(.world) #wfail{display:none}
+#wfail span{color:var(--mut);font-size:13px}
+#wfail code{font:11px/1.4 var(--mono);background:rgba(229,72,77,.08);color:#B4232A;padding:8px;border-radius:8px;word-break:break-word}
+#errbox{position:fixed;z-index:60;left:10px;bottom:10px;max-width:min(520px,calc(100vw - 20px));max-height:40vh;overflow:auto;white-space:pre-wrap;font:11px/1.4 var(--mono);color:#fff;background:#B4232A;padding:8px 10px;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.3)}
 #qaW{position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));z-index:12}
 #qaW .box{display:flex;align-items:center;gap:8px;padding:5px 5px 5px 14px;border-radius:14px;background:rgba(255,255,255,.94);color:#141416;box-shadow:0 14px 34px -10px rgba(10,15,30,.45)}
 #qaW input{flex:1;min-width:0;background:transparent;border:0;outline:0;font-size:15px;padding:9px 0}

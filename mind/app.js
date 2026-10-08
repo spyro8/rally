@@ -710,7 +710,24 @@ World.initWorld({canvas:$('#world'), labels:$('#wlabels'), night:nightLevel, sou
     else if (target.type==='done'){ if (!t.done){ const r = complete(t); toast(r.next ? `Done · next one ${fmtDate(r.next)}` : 'Done · resting at the pond', true); } }
     renderAll(); },
 }).then(() => { document.body.classList.add('ready'); syncWorld(); World.setMode(modeForView(S.view), false); layoutViewport();
-  if (!S.settings.introSeen) setTimeout(openIntro, 900); });
+  if (!S.settings.introSeen) setTimeout(openIntro, 900); })
+  .catch(e => { console.error(e); worldFail(e); });
+
+/* If the town can't start, say so where the town would be, with the reason, instead of a blank screen. */
+function worldFail(e){
+  const el = document.createElement('div'); el.id = 'wfail';
+  el.innerHTML = `<b>The town couldn't load</b><span>Your tasks are safe. Send Claude a screenshot of this card.</span><code></code><button class="btn">Try again</button>`;
+  el.querySelector('code').textContent = String(e && (e.message || e)) + ' · ' + navigator.userAgent.replace(/^Mozilla\/5\.0 /, '');
+  el.querySelector('button').onclick = () => location.reload();
+  document.body.appendChild(el);
+}
+/* Any other script error shows as a small red note (SPYR's error-box idea), so a screenshot tells the story. */
+(() => { let box = null;
+  const show = msg => { if (!box){ box = document.createElement('div'); box.id = 'errbox'; box.title = 'Tap to hide'; box.onclick = () => box.remove(); document.body.appendChild(box); }
+    box.textContent = (box.textContent ? box.textContent + '\n' : '') + msg; };
+  addEventListener('error', e => show((e.message || 'Error') + (e.filename ? ` (${e.filename.split('/').pop()}:${e.lineno})` : '')));
+  addEventListener('unhandledrejection', e => show('Promise: ' + String(e.reason && (e.reason.message || e.reason))));
+})();
 
 /* ============================== first-run tour ============================== */
 const INTRO = [
