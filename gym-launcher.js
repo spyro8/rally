@@ -1,4 +1,4 @@
-/* SPYR side tabs — v52.39
+/* SPYR side tabs — v52.45 (Gym · Shelf · Journey · Mind)
    Two vertical tabs on the Home screen (Gym, VILLAGE). Each opens a full-screen
    same-origin iframe. The village saves per SPYR profile with a rolling backup and
    receives real habit completions read through SPYR's own KV store (./config.json). */
@@ -40,7 +40,8 @@
   side.innerHTML =
     '<button type="button" class="gym" aria-label="Open Gym"><span class="dot"></span><span>Gym</span></button>' +
     '<button type="button" class="shelf" aria-label="Open your shelf"><span class="dot"></span><span>Shelf</span></button>' +
-    '<button type="button" class="journey" aria-label="Open Pixel Journey"><span class="dot"></span><span>Journey</span></button>';
+    '<button type="button" class="journey" aria-label="Open Pixel Journey"><span class="dot"></span><span>Journey</span></button>' +
+    '<button type="button" class="mind" aria-label="Open MIND"><span class="dot"></span><span>Mind</span></button>';
   doc.body.append(side);
 
   /* ---------- overlays ---------- */
@@ -83,6 +84,7 @@
   side.querySelector('.gym').addEventListener('click', () => openOverlay(gym, GYM_URL, '#101b18'));
   side.querySelector('.shelf').addEventListener('click', () => window.dispatchEvent(new CustomEvent('spyr:open-shelf')));
   side.querySelector('.journey').addEventListener('click', () => window.dispatchEvent(new CustomEvent('spyr:open-journey')));
+  side.querySelector('.mind').addEventListener('click', () => window.dispatchEvent(new CustomEvent('spyr:open-mind')));
   gym.close.addEventListener('click', () => closeOverlay(false));
   village.close.addEventListener('click', () => closeOverlay(true)); // village stays mounted; saves are cheap, reloads are not
   window.addEventListener('keydown', e => { if (e.key === 'Escape' && current) closeOverlay(current === village); });
