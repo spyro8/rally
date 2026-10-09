@@ -457,6 +457,16 @@ body.narrow:not(.world) #wfail{display:none}
 #wfail span{color:var(--mut);font-size:13px}
 #wfail code{font:11px/1.4 var(--mono);background:rgba(229,72,77,.08);color:#B4232A;padding:8px;border-radius:8px;word-break:break-word}
 #errbox{position:fixed;z-index:60;left:10px;bottom:10px;max-width:min(520px,calc(100vw - 20px));max-height:40vh;overflow:auto;white-space:pre-wrap;font:11px/1.4 var(--mono);color:#fff;background:#B4232A;padding:8px 10px;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+/* iPhone Safari zooms the whole page when a text box under 16px gets focus, and never zooms back.
+   On touch screens every text box is at least 16px (the big task title keeps its size). */
+@media (pointer:coarse){
+  input:not([type=checkbox]):not([type=radio]):not([type=file]), select, textarea:not(#triTitle){font-size:16px !important}
+  #det .dtitle textarea{font-size:21px !important}
+  html, body{touch-action:manipulation}
+  .dsec .prow{flex-wrap:wrap}
+  .dsec .prow #dDate,.dsec .prow #dTime{flex:1 1 calc(50% - 4px);min-width:0}
+  .dsec .prow #dRep{flex:1 1 100%}
+}
 #qaW{position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));z-index:12}
 #qaW .box{display:flex;align-items:center;gap:8px;padding:5px 5px 5px 14px;border-radius:14px;background:rgba(255,255,255,.94);color:#141416;box-shadow:0 14px 34px -10px rgba(10,15,30,.45)}
 #qaW input{flex:1;min-width:0;background:transparent;border:0;outline:0;font-size:15px;padding:9px 0}

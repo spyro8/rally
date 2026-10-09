@@ -321,6 +321,8 @@ function renderSide(){
   ms.forEach((b,i) => b.querySelector('em').textContent = cnt[i] || '');
 }
 let prevInbox = null;
+/* No page zoom from pinches outside the town (the town has its own pinch-zoom) — iOS ignores user-scalable inside a frame. */
+['gesturestart','gesturechange'].forEach(t => document.addEventListener(t, e => e.preventDefault(), {passive:false}));
 if (EMB){
   window.SPYRMind = {
     getState: () => S,
