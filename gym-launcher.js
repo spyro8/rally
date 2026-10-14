@@ -127,9 +127,15 @@
     if (cfg) return cfg;
     const c = await fetch('./config.json', { cache: 'no-store' }).then(r => r.json());
     if (!c.url || !c.key) throw new Error('config not set');
+    const key = c.key;
     cfg = {
       rest: `${c.url.replace(/\/+$/, '').replace(/\/rest\/v1$/, '')}/rest/v1/kv`,
-      headers: { apikey: c.key, Authorization: `Bearer ${c.key}`, 'Content-Type': 'application/json' }
+      /* the signed-in player's token when there is one (the database only lets owners touch their rows) */
+      get headers() {
+        let tok = key;
+        try { const s = JSON.parse(localStorage.getItem('rt1:session') || 'null'); if (s && s.access_token && (!s.expires_at || s.expires_at > Date.now() + 30e3)) tok = s.access_token; } catch {}
+        return { apikey: key, Authorization: `Bearer ${tok}`, 'Content-Type': 'application/json' };
+      }
     };
     return cfg;
   }

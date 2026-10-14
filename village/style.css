@@ -79,3 +79,6 @@ body:has(dialog[open]) main,body:has(dialog[open]) header{filter:none!important}
 
 #music-btn{appearance:none;width:42px;height:41px;flex:0 0 42px;padding:0;margin:0 2px;border-style:solid;border-width:8px 11px;border-image:url(assets/ui/plaque-dark.webp) 40 60 fill / 8px 11px stretch;background:transparent;color:#f3e6c8;font:700 17px/1 -apple-system,BlinkMacSystemFont,sans-serif;text-shadow:0 1px 0 #000;filter:drop-shadow(0 2px 2px #0006);cursor:pointer;display:grid;place-items:center}
 #music-btn.off{opacity:.55;text-decoration:line-through}
+
+/* v52.48: the place/rotate bar only shows while placing (it drew a see-through line over the item cards) */
+#catalog:not(.compact) .placing{display:none}
