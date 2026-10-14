@@ -440,6 +440,10 @@ body.embedded #spyrExit{display:block;position:fixed;z-index:34;top:max(12px,cal
   background:rgba(16,27,24,.86);color:#F3ECE1;font:700 12px/1 'Plus Jakarta Sans',var(--font);letter-spacing:.06em;padding:10px 13px;border-radius:99px;cursor:pointer;
   -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 6px 18px -6px rgba(0,0,0,.4)}
 body.embedded #spyrExit:active{transform:scale(.97)}
+#wtop #wMusic{margin-left:auto;width:38px;height:38px;border-radius:12px;border:1px solid rgba(0,0,0,.08);background:rgba(255,255,255,.88);display:grid;place-items:center;color:#2b2f2a;cursor:pointer;flex:0 0 auto}
+#wMusic.off,#tMusic.off{opacity:.6}
+/* one "← SPYR" look across rooms: the Journey/Village wooden plaque */
+body.embedded #spyrExit{appearance:none;background:none;background-color:transparent;border-style:solid;border-width:8px 11px;border-radius:0;border-image:url(../ui/plaque-dark.webp) 40 60 fill / 8px 11px stretch;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;color:#f3e6c8;font:700 13px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.02em;min-height:40px;padding:0 4px;text-shadow:0 1px 0 #000;white-space:nowrap;cursor:pointer;filter:drop-shadow(0 2px 2px rgba(0,0,0,.4))}
 body.embedded.narrow .mh{padding-top:calc(max(14px,env(safe-area-inset-top)) + 44px)}
 body.embedded.narrow.world #wtop{top:calc(max(14px,env(safe-area-inset-top)) + 0px);right:110px}
 #intro{position:fixed;z-index:36;right:84px;bottom:84px;width:min(360px,calc(100vw - 24px));padding:18px 18px 14px;border-radius:18px;background:var(--paper-solid);
@@ -563,6 +567,7 @@ body.narrow:not(.world) #wfail{display:none}
 <div id="toast"><span id="toastT"></span><button id="toastU"></button></div>
 <input type="file" id="importIn" accept="application/json" style="display:none">
 
-<script type="module" src="app.js"></script>
+<script src="../spyr-tracks.js?v=1"></script>
+<script type="module" src="app.js?v=46"></script>
 </body>
 </html>

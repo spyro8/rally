@@ -18,6 +18,8 @@ function fmtDate(k, long){ const d = diffDays(k, today()); if (d===0) return 'To
 const fmtTime = t => { const [h,m] = t.split(':').map(Number); const hh = h%12||12; return `${hh}${m?':'+pad(m):''}${h>=12?'pm':'am'}`; };
 const ago = ts => { const m = Math.round((Date.now()-ts)/6e4); if (m<1) return 'just now'; if (m<60) return m+'m ago'; const h = Math.round(m/60); if (h<24) return h+'h ago'; const d = Math.round(h/24); return d+'d ago'; };
 const ICON = {
+  musOn:'<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></svg>',
+  musOff:'<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/><path d="M3 3l18 18"/></svg>',
   inbox:'<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 13l3-8h12l3 8v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M3 13h5l1.5 2.5h5L16 13h5"/></svg>',
   today:'<svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.8l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 16.8l-5.4 2.9 1-6.1L3.2 9.3l6.1-.9z"/></svg>',
   upcoming:'<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>',
@@ -53,6 +55,14 @@ const KEYWORDS = {
 /* Inside SPYR (?embedded=1) MIND is a room: it saves per SPYR profile under spyr:mind:<pid>, the same key SPYR's
    room host mirrors to the account, and tells the host about every save. */
 const EMB = new URLSearchParams(location.search).has('embedded');
+/* MIND island music (inside SPYR). Starts on your first tap, stops when you leave the room,
+   and the ♪ button in the list toolbar and on the island turns it off and on. */
+const MUS = (EMB && window.SPYRTracks) ? window.SPYRTracks.create({ tracks: { island: '../audio/mind-island.mp3' }, volume: .42 }) : null;
+const musicOn = () => !(S && S.settings && S.settings.music === false);
+function musicSync(){ if (!MUS) return; const hidden = document.hidden || (window.frameElement && !window.frameElement.offsetParent); if (!musicOn() || hidden) { if (MUS.playing) MUS.stop(); } else if (!MUS.playing) MUS.start(); }
+function musicButtons(){ for (const b of document.querySelectorAll('#tMusic,#wMusic')) { b.innerHTML = musicOn() ? ICON.musOn : ICON.musOff; b.setAttribute('aria-pressed', String(musicOn())); b.classList.toggle('off', !musicOn()); } }
+function toggleMusic(){ S.settings.music = !musicOn(); save(); musicButtons(); musicSync(); }
+if (MUS) { document.addEventListener('pointerdown', () => musicSync(), { capture: true }); document.addEventListener('visibilitychange', musicSync); setInterval(() => { if (MUS.playing) musicSync(); }, 1500); }
 const PID = (() => { try { return (JSON.parse(localStorage.getItem('rt1:me') || 'null') || {}).id || null; } catch { return null; } })();
 const KEY = EMB ? `spyr:mind:${PID || 'guest'}` : 'spyr-mind:v6';
 
@@ -285,6 +295,7 @@ function renderMain(){
   const tools = [];
   if (v==='inbox' && c.inbox && !search) tools.push(`<button id="tSort" class="cta">${ICON.sort} Sort</button>`);
   if (L) tools.push(`<button id="tGroup" title="Group by">${ICON.group}</button><button id="tMore" title="List options">${ICON.dots}</button>`);
+  if (MUS) tools.push(`<button id="tMusic" class="mus" title="Music on or off" aria-pressed="${musicOn()}">${musicOn()?ICON.musOn:ICON.musOff}</button>`);
   tools.push(`<button id="tSearch" title="Search (/)" class="${$('#search').classList.contains('on')?'on':''}">${ICON.search}</button>`);
   $('#vTools').innerHTML = tools.join('');
   const secs = sectionsFor(v); const total = secs.reduce((n,s) => n + s.items.length, 0);
@@ -337,7 +348,7 @@ if (EMB){
   };
   document.body.classList.add('embedded');
   const b = document.createElement('button'); b.id = 'spyrExit'; b.type = 'button'; b.textContent = '← SPYR';
-  b.onclick = () => { clearTimeout(saveT); S.savedAt = new Date().toISOString(); try { localStorage.setItem(KEY, JSON.stringify(S)); window.dispatchEvent(new CustomEvent('spyr:mind-change', {detail: S})); } catch {}
+  b.onclick = () => { try { MUS && MUS.stop(); } catch {} clearTimeout(saveT); S.savedAt = new Date().toISOString(); try { localStorage.setItem(KEY, JSON.stringify(S)); window.dispatchEvent(new CustomEvent('spyr:mind-change', {detail: S})); } catch {}
     try { parent.postMessage({type:'spyr:mind-exit'}, location.origin); } catch {} };
   document.body.appendChild(b);
 }
@@ -651,9 +662,11 @@ $('#addList').onclick = () => openListEditor(null);
 $('#wsel').onclick = openWorlds; $('#dumpBtn').onclick = openDump; $('#setBtn').onclick = openSettings;
 $('#menuBtn').onclick = () => document.body.classList.add('drawer'); $('#scrim').onclick = () => document.body.classList.remove('drawer');
 function setWorld(on){ document.body.classList.toggle('world', on); $('#peek').classList.remove('open'); if (on) World.setMode(World.getMode()); }
+if (MUS){ const wb = document.createElement('button'); wb.id = 'wMusic'; wb.className = 'mus'; wb.title = 'Music on or off'; wb.onclick = (e) => { e.stopPropagation(); toggleMusic(); }; $('#wtop').appendChild(wb); musicButtons(); }
 $('#worldTog').onclick = () => setWorld(true); $('#toList').onclick = () => setWorld(false);
 $('#vTools').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return;
   if (b.id==='tSort') openTriage();
+  if (b.id==='tMusic'){ toggleMusic(); return; }
   if (b.id==='tSearch'){ const s = $('#search'); s.classList.toggle('on'); if (s.classList.contains('on')) $('#searchIn').focus(); else { search = ''; renderMain(); } b.classList.toggle('on'); }
   if (b.id==='tMore') openListEditor(S.view.slice(5));
   if (b.id==='tGroup'){ const id = S.view.slice(5); const cur = S.settings.group[id] || 'date'; pop(b, [['date','Due date'],['priority','Priority'],['tag','Tag'],['none','Manual (drag to reorder)']].map(([k,n]) => ({n:(cur===k?'✓ ':'   ')+n, fn:() => { S.settings.group[id] = k; renderAll(); }}))); } });

@@ -113,3 +113,13 @@ $('upgrade-building').onclick=()=>work.openUpgrade(selection);
 
 
 const syncBar=()=>{$('decorate').classList.toggle('active',!$('catalog').hidden);$('work-btn').classList.toggle('active',!!$('work-dialog').open);$('world-btn').classList.toggle('active',!!$('world-settings').open);};new MutationObserver(syncBar).observe(document.body,{subtree:true,attributes:true,attributeFilter:['hidden','open']});syncBar();$('hide-ui').onclick=()=>{$('settings').close();viewMode(true);};
+
+/* Village music (inside SPYR): "A Town Wakes Up". Starts on your first tap, ♪ button turns it off/on, stops on ← SPYR. */
+if(embedded&&window.SPYRTracks){const MUS=window.SPYRTracks.create({tracks:{town:'../audio/village-town.mp3'},volume:.45});let on=true;try{on=localStorage.getItem('spyr-village:music')!=='off';}catch{}
+const mb=document.createElement('button');mb.id='music-btn';mb.type='button';mb.setAttribute('aria-label','Music on or off');
+const ui=()=>{mb.textContent='♪';mb.classList.toggle('off',!on);mb.setAttribute('aria-pressed',String(on));};
+const sync=()=>{const hidden=document.hidden||(window.frameElement&&!window.frameElement.offsetParent);if(!on||hidden){if(MUS.playing)MUS.stop();}else if(!MUS.playing)MUS.start();};
+mb.onclick=e=>{e.stopPropagation();on=!on;try{localStorage.setItem('spyr-village:music',on?'on':'off');}catch{}ui();sync();};
+const menu=document.getElementById('menu-btn');menu.parentNode.insertBefore(mb,menu);ui();
+document.addEventListener('pointerdown',sync,{capture:true});document.addEventListener('visibilitychange',sync);setInterval(()=>{if(MUS.playing)sync();},1500);
+for(const id of ['host-exit','host-exit-2']){const b=document.getElementById(id);if(b)b.addEventListener('click',()=>{try{MUS.stop();}catch{}},{capture:true});}}

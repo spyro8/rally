@@ -355,10 +355,10 @@ const categories=[
 {id:'heavy',name:'Heavy Strength',image:'category-heavy',fallback:'gym-barn',description:'Two barbell sessions. Alternate A and B with at least a rest day between lifts.'},
 {id:'athletic',name:'Obstacle & Athletic',image:'category-obstacle',fallback:'citadel-forest-floor',description:'Build the carrying strength, endurance and control that obstacles demand.'},
 {id:'bodyweight',name:'Bodyweight & HIIT',image:'category-bodyweight',fallback:'forge-foundry-floor',description:'Strength and conditioning with room to move. No weights required.'},
-{id:'pilates',name:'Pilates',image:'category-pilates',fallback:'coastal-studio',description:'Deliberate mat work. Breath, alignment and whole-body control.'},
+{id:'pilates',hidden:true,name:'Pilates',image:'category-pilates',fallback:'coastal-studio',description:'Deliberate mat work. Breath, alignment and whole-body control.'},
 {id:'yoga',name:'Yoga & Mobility',image:'category-yoga',fallback:'mountain-conservatory',description:'Find space to move, build strength in your poses, or recover.'},
-{id:'run',name:'Run & Jog',image:'cedarwood-trail',fallback:'wind-meadows-floor',description:'Guided walk–jog, steady running and intervals. Your pace, your route.'},
-{id:'bike',name:'Cycling',image:'caribbean-runway',fallback:'citadel-water-floor',description:'Steady rides and controlled intervals, indoors or on a suitable outdoor route.'}
+{id:'run',hidden:true,name:'Run & Jog',image:'cedarwood-trail',fallback:'wind-meadows-floor',description:'Guided walk–jog, steady running and intervals. Your pace, your route.'},
+{id:'bike',hidden:true,name:'Cycling',image:'caribbean-runway',fallback:'citadel-water-floor',description:'Steady rides and controlled intervals, indoors or on a suitable outdoor route.'}
 ];
 Object.assign(research,{
  strong:{title:'StrongLifts · A/B structure and progression',url:'https://stronglifts.com/stronglifts-5x5/workout-program/',note:'Five compound lifts, alternating sessions and rest days.'},
@@ -409,13 +409,13 @@ Object.assign(movements,{
 });
 // Audio guidance and animated demonstrations share the same interval plan.
 movements.walk.art={...movements.kaiMarch.art};
-for(const [key,move] of Object.entries({jog:'cardio-jog',runFast:'cardio-run',rideEasy:'cardio-spin-easy',rideSteady:'cardio-spin',rideBrisk:'cardio-spin-brisk'}))movements[key].art={kind:'gym',move};
+for(const [key,move] of Object.entries({rowanJog:'cardio-jog',jog:'cardio-jog',runFast:'cardio-run',rideEasy:'cardio-spin-easy',rideSteady:'cardio-spin',rideBrisk:'cardio-spin-brisk'}))movements[key].art={kind:'gym',move};
 const session=(number,id,title,trainer,bg,category,mode,entries,extra={})=>make(number,id,title,trainer,bg,categories.find(c=>c.id===category).name,category,mode,entries,{equipment:'Mat',level:'Build your base',...extra});
 const collection=[
  session(1,'pull','Ironwood Pull','03','gym-venice','gym','sets',strength(['lat','cable','rear','curl'],3,'8–12',90),{route:'ironwood.html?v=4',equipment:'Cable machines · dumbbells',sources:['ace'],stamp:'PULL CLUB'}),
  session(2,'push','Ironwood Push','03','gym-rooftop','gym','sets',strength(['bench','shoulder','raise','triceps'],3,'8–12',90),{route:'ironwood-push.html?v=1',equipment:'Bench · dumbbells · cable',sources:['ace'],stamp:'PUSH CLUB'}),
  session(3,'legs','Ironwood Legs & Core','06','gym-barn','gym','sets',strength(['back','rdl','extension','calf','core'],3,'8–12',120),{route:'ironwood-legs.html?v=1',equipment:'Rack · barbell · dumbbells · machine',sources:['ace'],stamp:'GROUNDWORK'}),
- session(4,'dumbbells','Ironwood Foundations','05','woodland-gym','gym','sets',strength(['front','floorpress','row','hinge','deadbug'],3,'8–12',90),{equipment:'Dumbbells · mat',sources:['blender','ace'],stamp:'ROOTED',challenge:'Five movement patterns. One steady session.'}),
+ session(4,'dumbbells','Ironwood Foundations','05','woodland-gym','gym','sets',[...strength(['front','floorpress','row','hinge'],3,'8–12',90),...strength(['lunge'],3,'8 / side',90)],{equipment:'Dumbbells · mat',sources:['blender','ace'],stamp:'ROOTED',challenge:'Five movement patterns. One steady session.'}),
  session(5,'machines','Ironwood Machines','03','gym-venice','gym','sets',strength(['legPress','chestMachine','cable','lat','shoulderMachine'],3,'10–12',90),{equipment:'Leg press · press machines · cable',sources:['ace'],stamp:'MACHINE ROOM',challenge:'Adjust each seat and pad before your first set.'}),
  session(6,'barbell-a','Iron Standard A','03','gym-barn','heavy','sets',strength(['ashSquat','bbBench','bbRow'],5,'5',180),{equipment:'Barbell · rack · bench · safeties',level:'Barbell experience',sources:['strong'],stamp:'IRON A',warmup:300,cooldown:180,challenge:'Five sets of five. Take the full rest.'}),
  session(7,'barbell-b','Iron Standard B','03','gym-barn','heavy','sets',[...strength(['ashSquat','bbPress'],5,'5',180),...strength(['deadlift'],1,'5',180)],{equipment:'Barbell · rack · plates',level:'Barbell experience',sources:['strong'],stamp:'IRON B',warmup:300,cooldown:180,challenge:'Squat. Press. Deadlift. Build steadily.'}),
@@ -424,10 +424,10 @@ const collection=[
  session(10,'athletic','Summit Circuit','01','citadel-summit-floor','athletic','timed',timed(['kaiSquat','kaiLunge','pushup','climber','kaiMarch'],35,25),{rounds:4,sources:['obstacle','nike'],stamp:'SUMMIT',challenge:'Four steady rounds. Keep enough energy to finish cleanly.'}),
  session(11,'bodyweight','Bodyweight Club','01','wind-dojo-floor','bodyweight','sets',strength(['kaiSquat','pushup','kaiLunge'],3,'8–12',90),{sources:['wiki','ace'],stamp:'OWN YOUR WEIGHT',challenge:'Use a range and variation you can control.'}),
  session(12,'ignite','Ignite 20','01','forge-foundry-floor','bodyweight','timed',timed(['kaiSquat','jack','kaiLunge','pushup','climber'],40,20),{rounds:3,level:'Challenging',sources:['coach','insanity'],stamp:'IGNITION',challenge:'Three rounds. Sustainable intensity, soft landings.'}),
- session(13,'low-impact','Mosswood Rhythm','06','mosswood-panorama-floor','bodyweight','timed',timed(['step','heel','punch','sageSquat','sageMarch'],40,20),{rounds:3,equipment:'No equipment',sources:['coach'],stamp:'RHYTHM',challenge:'Keep your feet grounded and find your pace.'}),
+ session(13,'low-impact','Mosswood Rhythm','06','mosswood-panorama-floor','bodyweight','timed',timed(['step','heel','punch','sageSquat','sageMarch'],40,20),{rounds:3,equipment:'No equipment',sources:['coach'],stamp:'RHYTHM',hidden:true,challenge:'Keep your feet grounded and find your pace.'}),
  session(14,'boxing','Ember Fight Club','02','forge-foundry-floor','bodyweight','timed',timed(['jab','combo','hooks','weave','slip','four'],40,20),{rounds:2,equipment:'Clear floor space',sources:['boxing'],stamp:'RING CRAFT',challenge:'Return to guard. Change your lead for round two.'}),
  session(15,'pilates-foundations','Tidal Foundations','04','coastal-studio','pilates','timed',timed(['heelSlide','glute','clam','catcow'],40,20),{rounds:2,sources:['nhs','pilates'],stamp:'CENTERED',challenge:'Exhale through the effort. Keep your pelvis steady.'}),
- session(16,'pilates-control','Tidal Full-Body Control','04','coastal-studio','pilates','timed',timed(['hundred','dead','bird','proneLeg','frontSupport'],40,20),{rounds:3,level:'Steady challenge',sources:['nhs','pilates'],stamp:'TIDAL CONTROL',challenge:'Arm endurance, trunk control and gentle back-body strength.'}),
+ session(16,'pilates-control','Tidal Full-Body Control','04','coastal-studio','pilates','timed',timed(['hundred','bird','proneLeg','frontSupport'],40,20),{rounds:3,level:'Steady challenge',sources:['nhs','pilates'],stamp:'TIDAL CONTROL',challenge:'Arm endurance, trunk control and gentle back-body strength.'}),
  session(17,'beginner-flow','Glasshouse Flow','04','mountain-conservatory','yoga','timed',timed(['mountain','catcow','lowLunge','child'],50,15),{rounds:2,warmup:60,cooldown:120,sources:['nhs','yoga'],stamp:'FIRST FLOW',challenge:'Breathe into a comfortable range. Take your time changing position.'}),
  session(18,'power-flow','Mountain Flow','04','mountain-conservatory','yoga','timed',timed(['mountain','lowLunge','warrior','tree','dogplank'],40,15),{rounds:2,level:'Steady challenge',sources:['nhs','yoga'],stamp:'MOUNTAIN FLOW',challenge:'Standing strength, single-leg balance and a controlled floor flow.'}),
  session(19,'reset','Stillwater Reset','04','mountain-conservatory','yoga','timed',[{key:'twist',seconds:60,rest:15},{key:'butterfly',seconds:90,rest:15},{key:'matRest',seconds:120,rest:0}],{rounds:1,warmup:60,cooldown:60,sources:['yoga','nhs'],stamp:'REST COUNTS',challenge:'A floor-only reset: gentle rotation, supported hips and quiet breathing.'}),
@@ -1031,8 +1031,8 @@ function renderRooms(){
   {const r=resumeCard();if(r)root.append(r);}
   root.append(sectionLabel('Explore'));
   const grid=el('div','lodge-grid');
-  for(const c of categories){
-    const n=collection.filter(w=>w.category===c.id).length;
+  for(const c of categories.filter(c=>!c.hidden)){
+    const n=collection.filter(w=>w.category===c.id&&!w.hidden).length;
     const a=el('a','lodge-cat');a.href='#room='+c.id;
     a.innerHTML=`<img class="ico" src="${LODGE}cat-${c.id}.png" alt=""><span class="txt"><span class="nm">${esc(c.name)}</span><span class="ct">${n} session${n===1?'':'s'}</span></span>`;
     grid.append(a);
@@ -1045,7 +1045,7 @@ function renderRoom(){
   const c=categories.find(x=>x.id===roomId);
   root.append(header(c.name,()=>go('')));
   root.append(lodgeBanner(c.id));
-  const ws=collection.filter(w=>w.category===c.id),ps=pausedSession();
+  const ws=collection.filter(w=>w.category===c.id&&!w.hidden),ps=pausedSession();
   root.append(sectionLabel(`${ws.length} session${ws.length===1?'':'s'}`));
   const list=el('div','lodge-list');
   for(const w of ws){
@@ -1109,11 +1109,14 @@ function resumeCard(){
 
 
 /* ---------- placeholder workout music (generated live; real tracks can replace it later) ---------- */
-const MUSIC=globalThis.SPYRMusic?globalThis.SPYRMusic.create():null;globalThis.__gymMusic=MUSIC;
+const GEN=globalThis.SPYRMusic?globalThis.SPYRMusic.create():null;
+/* Recorded tracks for training sessions (women trainers get Workout Groove, men Muscular Groove); calm yoga/pilates keep the generated music. */
+const WOMEN=['02','04'];
+const MUSIC=globalThis.SPYRTracks?globalThis.SPYRTracks.create({tracks:{groove:'../audio/gym-groove.mp3',muscle:'../audio/gym-muscle.mp3'},pick:o=>o.mode==='calm'?null:(o.women?'groove':'muscle'),volume:.55,fallback:GEN}):GEN;globalThis.__gymMusic=MUSIC;
 let musicOn=read('spyr-gym:music',true)!==false;
 const musicMode=c=>({yoga:'calm',pilates:'calm',run:'cardio',bike:'cardio'})[c]||'drive';
 const spkIcon=on=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/>${on?'<path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>':'<path d="M17 9l5 6M22 9l-5 6"/>'}</svg>`;
-function musicStart(){if(!MUSIC)return;MUSIC.set({mode:musicMode(workout.category),intensity:1});MUSIC.setMuted(!musicOn);MUSIC.start();}
+function musicStart(){if(!MUSIC)return;MUSIC.set({mode:musicMode(workout.category),intensity:1,women:WOMEN.includes(workout.trainer)});MUSIC.setMuted(!musicOn);MUSIC.start();}
 function musicStop(f){try{MUSIC&&MUSIC.stop(f);}catch{}}
 
 /* ---------- player ---------- */

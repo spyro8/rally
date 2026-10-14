@@ -69,8 +69,8 @@ function renderRooms(){
   {const r=resumeCard();if(r)root.append(r);}
   root.append(sectionLabel('Explore'));
   const grid=el('div','lodge-grid');
-  for(const c of categories){
-    const n=collection.filter(w=>w.category===c.id).length;
+  for(const c of categories.filter(c=>!c.hidden)){
+    const n=collection.filter(w=>w.category===c.id&&!w.hidden).length;
     const a=el('a','lodge-cat');a.href='#room='+c.id;
     a.innerHTML=`<img class="ico" src="${LODGE}cat-${c.id}.png" alt=""><span class="txt"><span class="nm">${esc(c.name)}</span><span class="ct">${n} session${n===1?'':'s'}</span></span>`;
     grid.append(a);
@@ -83,7 +83,7 @@ function renderRoom(){
   const c=categories.find(x=>x.id===roomId);
   root.append(header(c.name,()=>go('')));
   root.append(lodgeBanner(c.id));
-  const ws=collection.filter(w=>w.category===c.id),ps=pausedSession();
+  const ws=collection.filter(w=>w.category===c.id&&!w.hidden),ps=pausedSession();
   root.append(sectionLabel(`${ws.length} session${ws.length===1?'':'s'}`));
   const list=el('div','lodge-list');
   for(const w of ws){
@@ -147,11 +147,14 @@ function resumeCard(){
 
 
 /* ---------- placeholder workout music (generated live; real tracks can replace it later) ---------- */
-const MUSIC=globalThis.SPYRMusic?globalThis.SPYRMusic.create():null;globalThis.__gymMusic=MUSIC;
+const GEN=globalThis.SPYRMusic?globalThis.SPYRMusic.create():null;
+/* Recorded tracks for training sessions (women trainers get Workout Groove, men Muscular Groove); calm yoga/pilates keep the generated music. */
+const WOMEN=['02','04'];
+const MUSIC=globalThis.SPYRTracks?globalThis.SPYRTracks.create({tracks:{groove:'../audio/gym-groove.mp3',muscle:'../audio/gym-muscle.mp3'},pick:o=>o.mode==='calm'?null:(o.women?'groove':'muscle'),volume:.55,fallback:GEN}):GEN;globalThis.__gymMusic=MUSIC;
 let musicOn=read('spyr-gym:music',true)!==false;
 const musicMode=c=>({yoga:'calm',pilates:'calm',run:'cardio',bike:'cardio'})[c]||'drive';
 const spkIcon=on=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/>${on?'<path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>':'<path d="M17 9l5 6M22 9l-5 6"/>'}</svg>`;
-function musicStart(){if(!MUSIC)return;MUSIC.set({mode:musicMode(workout.category),intensity:1});MUSIC.setMuted(!musicOn);MUSIC.start();}
+function musicStart(){if(!MUSIC)return;MUSIC.set({mode:musicMode(workout.category),intensity:1,women:WOMEN.includes(workout.trainer)});MUSIC.setMuted(!musicOn);MUSIC.start();}
 function musicStop(f){try{MUSIC&&MUSIC.stop(f);}catch{}}
 
 /* ---------- player ---------- */
