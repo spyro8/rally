@@ -2,7 +2,7 @@
 // and shows its offline banner. Pictures, audio and fonts are never cached here — iPhone's
 // cache storage has a small quota, and when it filled up a cloned response could stall and leave
 // a room (the Journey) stuck on its loading screen. Old caches are deleted on every update.
-const C = "spyr-v52-46g";
+const C = "spyr-v52-47";
 const SHELL = /\.(html|js|css|json|webmanifest)$/i;
 self.addEventListener("install", (e) => { self.skipWaiting(); });
 self.addEventListener("activate", (e) => {
