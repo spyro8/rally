@@ -4,7 +4,7 @@
 //   phone (that's what makes the Journey open fast again). This cache keeps its name across app
 //   versions because the art files never change in place; a new picture always has a new name.
 // - Supabase and other sites are never touched.
-const C = "spyr-v52-49";
+const C = "spyr-v52-50";
 const MEDIA = "spyr-media-1";
 const SHELL = /\.(html|js|css|json|webmanifest)$/i;
 const ART = /\.(webp|png|jpe?g|gif|svg|mp3|m4a|ogg|wav|ttf|otf|woff2?)$/i;
