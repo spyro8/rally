@@ -1029,7 +1029,19 @@ function renderRooms(){
   root.append(header('SPYR Gym'));
   root.append(lodgeBanner('home'));
   {const r=resumeCard();if(r)root.append(r);}
-  root.append(sectionLabel('Explore'));
+  /* v52.52: Iron Archive (collectible workout cards) */
+  root.append(sectionLabel('Iron Archive'));
+  {const l=el('div','lodge-list'),a=el('a','lodge-wo');a.href='archive/index.html';
+   const n=(window.ARCHIVE_COUNT||65);
+   a.innerHTML=`<img class="ico" src="archive/cards/014-t.webp" alt="" style="object-fit:cover;border-radius:6px"><span class="txt"><span class="nm">Iron Archive</span><span class="mt">${n} cards · 21 decks</span><span class="tr">Log sets, claim cards, earn foils</span></span><span class="chev" aria-hidden="true">›</span>`;
+   l.append(a);root.append(l);}
+  /* v52.55: Yoga & Mobility deck (moved here from Breathe). It opens in SPYR and comes back to GYM when closed. */
+  root.append(sectionLabel('Yoga & mobility'));
+  {const l=el('div','lodge-list'),a=el('a','lodge-wo');a.href='#';
+   a.innerHTML=`<img class="ico" src="assets/lodge/cat-yoga.png" alt="" style="image-rendering:pixelated"><span class="txt"><span class="nm">Yoga Deck</span><span class="mt">36 cards · yoga, mobility, stretches</span><span class="tr">Hold times, breathing cues, logs to Workout</span></span><span class="chev" aria-hidden="true">›</span>`;
+   a.onclick=e=>{e.preventDefault();try{if(window.parent!==window){window.parent.postMessage({type:'spyr:open-yoga'},location.origin);return;}}catch{}};
+   l.append(a);root.append(l);}
+  root.append(sectionLabel('Guided classes'));
   const grid=el('div','lodge-grid');
   for(const c of categories.filter(c=>!c.hidden)){
     const n=collection.filter(w=>w.category===c.id&&!w.hidden).length;

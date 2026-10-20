@@ -80,6 +80,7 @@
     if (meta && meta.dataset.prev) meta.content = meta.dataset.prev;
     setTimeout(() => { try { sync(); } catch {} }, 0);
     if (!keepFrame) o.frame.removeAttribute('src');
+    window.dispatchEvent(new CustomEvent('spyr:overlay-closed'));
   }
   side.querySelector('.gym').addEventListener('click', () => openOverlay(gym, GYM_URL, '#101b18'));
   side.querySelector('.shelf').addEventListener('click', () => window.dispatchEvent(new CustomEvent('spyr:open-shelf')));
@@ -152,6 +153,15 @@
       body: JSON.stringify({ key, value, updated_at: new Date().toISOString() }) });
     if (!r.ok) throw new Error('kv write failed');
   }
+
+  /* ---------- Iron Archive cloud row (v52.52). The Archive page does the merging; this is just the pipe.
+     Key ends with the profile id so the database's owner rules protect it like the other spyr: rows. */
+  window.SPYR_ARCHIVE_STORE = {
+    load: (pid) => kvGet(`spyr:archive:${pid}`),
+    /* v52.54: card sets published after the Founder's Set (read-only for players) */
+    sets: () => kvGet('spyr:sets'),
+    save: (pid, value) => { if (!pid || pid !== profileId()) return Promise.reject(new Error('signed out')); return kvSet(`spyr:archive:${pid}`, value); }
+  };
 
   /* ---------- village persistence (local first, KV mirror) ---------- */
   const vKey = pid => `spyr:village:${pid}`;
@@ -251,12 +261,18 @@
     const d = e.data || {};
     if (e.source === gym.frame.contentWindow) {
       if (d.type === 'spyr:gym-exit') { closeOverlay(false); return; }
+      /* v52.55: Yoga Deck lives in GYM but opens in SPYR; Meditation Space credits Meditation minutes */
+      if (d.type === 'spyr:open-yoga') { closeOverlay(false); window.dispatchEvent(new CustomEvent('spyr:open-yoga')); return; }
+      if (d.type === 'spyr:meditate-complete') { const min = Math.max(0, Math.min(240, Math.round(Number(d.min) || 0))); if (min) window.dispatchEvent(new CustomEvent('spyr:meditate', { detail: { min, title: String(d.title || '').slice(0, 80), kind: String(d.kind || '').slice(0, 20) } })); return; }
+      if (d.type === 'spyr:open-workout') { closeOverlay(false); window.dispatchEvent(new CustomEvent('spyr:open-workout', { detail: { exercise: d.exercise || null } })); return; }
       if (d.type === 'spyr:gym-complete' && d.record) {
         try {
           const rec = d.record;
           const entry = { logId: rec.logId || (rec.date + ':' + (rec.title || 'session')), date: rec.date || new Date().toISOString(),
             title: rec.title || 'Gym session', trainer: rec.trainer ?? null, elapsed: Number(rec.elapsed) || 0,
-            complete: !!rec.complete, stamp: rec.stamp ?? null, source: 'spyr-gym' };
+            complete: !!rec.complete, stamp: rec.stamp ?? null, source: rec.trainer === 'archive' ? 'archive' : 'spyr-gym', pid: rec.pid || profileId() || null };
+          /* v52.52: Iron Archive decks carry their sets so they land in Workout history */
+          if (rec.trainer === 'archive' && Array.isArray(rec.records)) { entry.records = rec.records; entry.start = rec.start ?? null; entry.deck = rec.deck ?? null; }
           const list = JSON.parse(localStorage.getItem(GYM_STORE) || '[]');
           localStorage.setItem(GYM_STORE, JSON.stringify(list.filter(x => x.logId !== entry.logId).concat(entry).slice(-200)));
           window.dispatchEvent(new CustomEvent('spyr:gym-complete', { detail: entry }));
@@ -267,8 +283,12 @@
 
   window.SPYR_GYM = {
     open: () => openOverlay(gym, GYM_URL, '#101b18'), close: () => closeOverlay(false),
+    /* Iron Archive straight from the Workout screen; archive('014') opens that card */
+    archive: (card) => openOverlay(gym, './gym/archive/index.html' + (card ? '#card=' + card : ''), '#F3ECE1'),
     completions: () => { try { return JSON.parse(localStorage.getItem(GYM_STORE) || '[]'); } catch { return []; } },
     clear: () => localStorage.removeItem(GYM_STORE)
   };
+  /* v52.55: the Meditation Space (animated garden, guided meditations, journeys, music, timer) */
+  window.SPYR_SANCTUARY = { open: () => openOverlay(gym, './sanctuary/index.html', '#1d2b26'), close: () => closeOverlay(false) };
   window.SPYR_VILLAGE = { open: openVillage, close: () => closeOverlay(true), sync: () => syncHabits(profileId()), state: () => api()?.getState?.() };
 })();

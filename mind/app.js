@@ -1,4 +1,4 @@
-import * as World from './world.js';
+import * as World from './world.js?v=54';
 
 /* ============================== utils ============================== */
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f6efe2">
+<title>SPYR Meditation Space</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="style.css?v=20">
+</head>
+<body>
+
+<!-- the living garden; it moves between the card on the home screen and the top of the player -->
+<div class="garden" id="garden">
+  <canvas id="scene" width="1536" height="1024" role="img" aria-label="A monk meditating in a walled garden with a koi pond, lanterns and a sleeping cat"></canvas>
+  <div class="g-shade" aria-hidden="true"></div>
+</div>
+
+<main id="app">
+  <!-- home -->
+  <section id="library" class="view">
+    <header class="top">
+      <button id="exit" class="plaque" aria-label="Back to SPYR">← SPYR</button>
+      <span class="brand"><b>SPYR</b> Meditation</span>
+      <button id="setBtn" class="iconbtn" aria-label="Sound and garden settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg></button>
+    </header>
+    <h1 id="hello">Your quiet place.</h1>
+    <p class="lede" id="lede">Set the world down for a while.</p>
+
+    <div class="g-card" id="gardenSlot">
+      <div class="g-chips">
+        <button id="dayBtn" class="gchip" aria-label="Switch to night"></button>
+        <button id="rainBtn" class="gchip" aria-pressed="false" aria-label="Rain"></button>
+      </div>
+    </div>
+
+    <div class="weekrow">
+      <div class="week" id="week" aria-label="Days you meditated this week"></div>
+      <p id="today" class="sub"></p>
+    </div>
+
+    <nav class="seg" role="tablist" aria-label="Meditation type">
+      <button role="tab" data-mode="guided" aria-selected="true">Guided</button>
+      <button role="tab" data-mode="journeys" aria-selected="false">Journeys</button>
+      <button role="tab" data-mode="music" aria-selected="false">Music</button>
+      <button role="tab" data-mode="timer" aria-selected="false">Timer</button>
+    </nav>
+
+    <h2 class="sec" id="secTitle">A moment for you</h2>
+    <p id="pathNote" class="note"></p>
+    <ul id="list" class="tracks"></ul>
+    <div id="feature"></div>
+
+    <!-- timer -->
+    <div id="timerPane" hidden>
+      <div class="presets" id="presets"></div>
+      <p class="unit">minutes</p>
+      <div class="custom">
+        <button class="nudge" data-d="-5" aria-label="Five minutes less">−</button>
+        <span>Or <b id="tMins">10</b> minutes</span>
+        <button class="nudge" data-d="5" aria-label="Five minutes more">+</button>
+      </div>
+      <div id="scapeHome"></div>
+      <button id="tStart" class="cta">Start 10-minute session<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+      <p class="note centre">A bowl rings to begin and again when your time is up.</p>
+    </div>
+  </section>
+
+  <!-- player -->
+  <section id="player" class="view" hidden>
+    <div class="p-garden" id="playerSlot">
+      <button id="back" class="glassbtn p-close" aria-label="Back to all meditations"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      <button id="ambBtn" class="glassbtn p-sound" aria-label="Sound and garden settings" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg></button>
+      <div class="p-meta">
+        <p id="npKind" class="kind"></p>
+        <h2 id="npTitle"></h2>
+        <p id="npWhere" class="where"></p>
+      </div>
+    </div>
+
+    <div class="p-sheet">
+      <p id="bigTime" class="bigtime">0:00</p>
+      <div class="scrub">
+        <input id="seek" type="range" min="0" max="1000" value="0" aria-label="Position">
+        <div class="times"><span id="tNow">0:00</span><span id="tLeft">0:00</span></div>
+      </div>
+      <div class="caption" id="caption" aria-live="polite"></div>
+      <div class="transport">
+        <canvas id="waves" class="waves" aria-hidden="true"></canvas>
+        <button id="rew" class="round" aria-label="Back 15 seconds"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.3-5.6"/><path d="M4 4v4h4"/></svg><i>15</i></button>
+        <button id="pp" class="play" aria-label="Pause"><svg viewBox="0 0 24 24" aria-hidden="true"><path id="ppIcon" d="M8 5v14l11-7z"/></svg></button>
+        <button id="fwd" class="round" aria-label="Forward 15 seconds"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v4h-4"/></svg><i>15</i></button>
+      </div>
+      <div class="extras">
+        <button id="capBtn" class="link" aria-pressed="true">Words on</button>
+        <span class="dot" aria-hidden="true"></span>
+        <button id="endBtn" class="link">End session</button>
+      </div>
+      <div id="done" class="done" hidden>
+        <div class="done-lanterns" id="doneLanterns" aria-hidden="true"></div>
+        <p id="doneMin" class="done-m"></p>
+        <p class="done-t">Sit for a moment before you move.</p>
+        <button id="again" class="cta">Back to the garden</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- soundscape: shown on the timer page, and as a sheet from the player or the settings button -->
+<div class="sheet-wrap" id="sheetWrap" hidden><div class="sheet" id="sheet"><div class="grab"></div><div id="scapeSheet"></div></div></div>
+<div id="soundscape" class="scape">
+  <h3 class="sec small">Your soundscape</h3>
+  <label class="sl"><span class="sl-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3 4 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 3-7 6-11z"/></svg></span><span class="sl-b"><span>Garden water</span><input id="vWater" type="range" min="0" max="100" value="30"></span></label>
+  <label class="sl"><span class="sl-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 15a4 4 0 0 1-.6-8A6 6 0 0 1 18 7.5a3.5 3.5 0 0 1-.5 7"/><path d="M9 18l-1 2M13 18l-1 2M17 18l-1 2"/></svg></span><span class="sl-b"><span>Gentle rain</span><input id="vRain" type="range" min="0" max="100" value="0"></span></label>
+  <label class="sl sel" id="bedRow"><span class="sl-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg></span><span class="sl-b"><span>Underneath the timer</span><select id="tSound"></select></span></label>
+  <div class="sw"><span class="sw-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span><span>Night garden</span><button id="nightSw" class="switch" role="switch" aria-checked="false" aria-label="Night garden"><i></i></button></div>
+  <div class="sw"><span class="sw-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 15a4 4 0 0 1-.6-8A6 6 0 0 1 18 7.5a3.5 3.5 0 0 1-.5 7"/><path d="M9 18l-1 2M13 18l-1 2M17 18l-1 2"/></svg></span><span>Rain in the garden</span><button id="rainSw" class="switch" role="switch" aria-checked="false" aria-label="Rain in the garden"><i></i></button></div>
+  <div class="sw"><span class="sw-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8h11a3 3 0 1 0-3-3M3 16h14a3 3 0 1 1-3 3M3 12h7"/></svg></span><span>Reduced motion</span><button id="motionSw" class="switch" role="switch" aria-checked="false" aria-label="Reduced motion"><i></i></button></div>
+</div>
+
+<!-- mini player while browsing -->
+<button id="mini" class="mini" hidden aria-label="Open what's playing">
+  <span class="mini-bar"><i id="miniFill"></i></span>
+  <img id="miniArt" class="mini-art" alt="">
+  <span class="mini-t" id="miniT"></span>
+  <span class="mini-pp" id="miniPP" role="button" aria-label="Pause"></span>
+</button>
+
+<audio id="audio" preload="metadata" playsinline></audio>
+<audio id="bed" preload="none" playsinline loop></audio>
+<script type="module" src="app.js?v=20"></script>
+</body>
+</html>

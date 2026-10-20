@@ -519,9 +519,10 @@ function layout(){
   const hit = r => placed.find(p => !(r.x1 < p.r.x0 || r.x0 > p.r.x1 || r.y1 < p.r.y0 || r.y0 > p.r.y1));
   for (const c of cands){ const a = c.a;
     if (!a.natW){ a.note.style.maxWidth = 'none'; a.el.classList.remove('mini'); a.natW = Math.ceil(a.note.getBoundingClientRect().width) || 140; a.note.style.maxWidth = ''; }
-    const w = Math.min(lmax, a.natW);
+    const w = Math.min(lmax, a.natW, innerWidth - 24);
     const off = c.x < VP.x0-30 || c.x > VP.x1+30 || c.y < VP.y0-10 || c.y > VP.y1+60;
     if (off){ if (a.shown){ a.el.style.opacity = 0; a.el.style.pointerEvents = 'none'; } a.shown = false; continue; }
+    c.x = Math.max(w/2 + 8, Math.min(innerWidth - w/2 - 8, c.x)); // v52.54: keep the whole label on screen (small phones)
     const r = {x0:c.x-w/2-2, x1:c.x+w/2+2, y0:c.y-26, y1:c.y};
     const full = c.rank <= 1 || !hit(r);
     if (full) placed.push({a, r});

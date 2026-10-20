@@ -1,13 +1,16 @@
 // SPYR service worker.
-// - App shell (html / js / css / json): network first, saved copy when offline. Replaced every version.
-// - Pictures, music and fonts: saved on the phone the first time they load, then served from the
+// - Built app code in /assets/ (file names change every version): served from the phone once saved.
+// - Other app files (html / js / css / json): network first, but after 3.5 s with no answer the saved
+//   copy is used (slow signal no longer means a blank screen). Replaced every version.
+// - Music is not kept by this worker (the browser's own cache still helps) so storage stays small.
+// - Pictures and fonts: saved on the phone the first time they load, then served from the
 //   phone (that's what makes the Journey open fast again). This cache keeps its name across app
 //   versions because the art files never change in place; a new picture always has a new name.
 // - Supabase and other sites are never touched.
-const C = "spyr-v52-51";
+const C = "spyr-v52-55";
 const MEDIA = "spyr-media-1";
 const SHELL = /\.(html|js|css|json|webmanifest)$/i;
-const ART = /\.(webp|png|jpe?g|gif|svg|mp3|m4a|ogg|wav|ttf|otf|woff2?)$/i;
+const ART = /\.(webp|png|jpe?g|gif|svg|ttf|otf|woff2?)$/i;
 
 self.addEventListener("install", () => { self.skipWaiting(); });
 self.addEventListener("activate", (e) => {
@@ -40,17 +43,23 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
+  if (/\/assets\/[^/]+-[\w-]{6,}\.(js|css)$/.test(url.pathname)) {   // hashed build files never change
+    e.respondWith((async () => {
+      try { const hit = await caches.match(req, { cacheName: C }); if (hit) return hit; } catch {}
+      const res = await fetch(req);
+      keep(C, req, res);
+      return res;
+    })());
+    return;
+  }
+
   if (SHELL.test(url.pathname) || url.pathname.endsWith("/")) {
     e.respondWith((async () => {
-      try {
-        const res = await fetch(req);
-        keep(C, req, res);
-        return res;
-      } catch (err) {
-        const hit = await caches.match(req);
-        if (hit) return hit;
-        throw err;
-      }
+      const net = fetch(req).then((res) => { keep(C, req, res); return res; }); net.catch(() => {});
+      let hit = null; try { hit = await caches.match(req, { cacheName: C }); } catch {}
+      if (!hit) return net;                                    // first visit: wait for the network
+      const slow = new Promise((r) => setTimeout(() => r(null), 3500));
+      try { const res = await Promise.race([net, slow]); return res || hit; } catch { return hit; }
     })());
   }
 });
