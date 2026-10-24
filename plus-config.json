@@ -1,7 +1,25 @@
 {
-  "_help": "SPYR+ settings. gate: where SPYR+ is switched on (web stays free until you flip it). launch: the date free weeks start from for accounts made before launch. freeDays: length of the free week. plus: what needs SPYR+ once the free week is over.",
-  "gate": { "ios": true, "android": true, "web": false },
+  "_help": "SPYR+ settings. gate: where SPYR+ is switched on (web stays free until you flip it). launch: the date free weeks start from for accounts made before launch. freeDays: length of the free week. plus: what needs SPYR+ once the free week is over. comp: player ids that get SPYR+ free (find an id in Supabase: select key, value->>'name' from kv where key like 'rt1:p:%'; the id is the part after rt1:p:).",
+  "gate": {
+    "ios": true,
+    "android": true,
+    "web": false
+  },
   "launch": "2026-11-20",
   "freeDays": 7,
-  "plus": ["archive", "gym", "workoutPro", "mealsPro", "meditation", "breathe", "village", "journey", "wilds", "shelf", "notebook", "mind"]
+  "plus": [
+    "archive",
+    "gym",
+    "workoutPro",
+    "mealsPro",
+    "meditation",
+    "breathe",
+    "village",
+    "journey",
+    "wilds",
+    "shelf",
+    "notebook",
+    "mind"
+  ],
+  "comp": []
 }
