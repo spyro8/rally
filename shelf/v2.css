@@ -2,7 +2,7 @@
 .tools{display:flex;justify-content:center;gap:10px;margin:14px auto 0;position:relative;z-index:2}
 .tools button{font-size:14px;padding:8px 14px}
 .book.dnf{filter:saturate(.45) brightness(.8)}
-.timer-pill{position:fixed;left:50%;transform:translateX(-50%);bottom:max(14px,env(safe-area-inset-bottom));z-index:20;display:flex;align-items:center;gap:10px;background:#2b2118ee;border:2px solid #9c8157;padding:7px 8px 7px 14px;box-shadow:0 3px #120e0b,0 8px 20px #0008;color:#f0dcb0;font-size:13px;white-space:nowrap}
+.timer-pill{position:fixed;left:50%;transform:translateX(-50%);bottom:max(14px,var(--sa-bottom,env(safe-area-inset-bottom)));z-index:20;display:flex;align-items:center;gap:10px;background:#2b2118ee;border:2px solid #9c8157;padding:7px 8px 7px 14px;box-shadow:0 3px #120e0b,0 8px 20px #0008;color:#f0dcb0;font-size:13px;white-space:nowrap}
 .timer-pill .dot{width:8px;height:8px;background:#d9584a;animation:blink 1s steps(2) infinite}
 @keyframes blink{50%{opacity:.2}}
 .timer-pill button{padding:5px 10px;font-size:12px}

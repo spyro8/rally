@@ -6,10 +6,10 @@
 <meta name="theme-color" content="#231a10">
 <title>Pixel Journey · test</title>
 <style>
-:root{--bg:#1d1610;--ink:#3a2c1a;--mut:#6f5a3a;--parch:#f2e5c4;--parch2:#e6d4a8;--wood:#6b4526;--wood-d:#3e2714;--gold:#e8c56a;--green:#43663a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{--bg:#1d1610;--ink:#3a2c1a;--mut:#6f5a3a;--parch:#f2e5c4;--parch2:#e6d4a8;--wood:#6b4526;--wood-d:#3e2714;--gold:#e8c56a;--green:#43663a;box-sizing:border-box;padding-top:var(--sa-top,env(safe-area-inset-top,0px));padding-bottom:var(--sa-bottom,env(safe-area-inset-bottom,0px))}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#1d1610}}
 :root[data-theme="dark"]{--bg:#1d1610}
-html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+html{height:100%;scroll-padding-top:var(--sa-top,env(safe-area-inset-top,0px))}
 *,*:before,*:after{box-sizing:border-box}
 body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:600 14px/1.35 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;font-variant-numeric:tabular-nums;overflow:hidden;-webkit-tap-highlight-color:transparent}
 .px{font-family:Pixelify,ui-monospace,monospace;letter-spacing:.02em}
@@ -39,7 +39,7 @@ body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:600 14px/1.
 #jr{position:absolute;left:50%;bottom:54px;transform:translateX(-50%);font:700 16px/1.2 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#f3e6c8;border-style:solid;border-width:8px 12px;border-image:var(--kit-dark) 40 60 fill / 8px 12px stretch;padding:0 6px;white-space:nowrap}
 #toast{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:7px;align-items:center;font:700 15px/1.2 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#f3e6c8;background:rgba(24,18,10,.86);border:2px solid #7a6444;padding:7px 12px;white-space:nowrap;pointer-events:none}
 /* ---------- bottom panel ---------- */
-#panel{flex:0 0 auto;position:relative;padding:14px 12px calc(12px + env(safe-area-inset-bottom,0px));background:
+#panel{flex:0 0 auto;position:relative;padding:14px 12px calc(12px + var(--sa-bottom,env(safe-area-inset-bottom,0px)));background:
   repeating-linear-gradient(0deg,rgba(0,0,0,.07) 0 2px,transparent 2px 9px),linear-gradient(#6d4829,#553519);border-top:4px solid #2c1c0d;box-shadow:inset 0 3px 0 #8a5d35;display:flex;flex-direction:column;gap:10px;transition:transform .35s}
 #panel:before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:#a57547;opacity:.6}
 .navrow{display:flex;align-items:stretch;gap:8px}
@@ -64,7 +64,7 @@ body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:600 14px/1.
 body.replaying #testbox,body.replaying .testrow{display:none}
 /* ---------- entry card ---------- */
 .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,8,5,.6);padding:16px;z-index:10;overflow:auto}
-#book{z-index:10;justify-content:safe center;padding-top:calc(16px + env(safe-area-inset-top,0px))}
+#book{z-index:10;justify-content:safe center;padding-top:calc(16px + var(--sa-top,env(safe-area-inset-top,0px)))}
 #entry{z-index:30}
 #book-tabs{z-index:2}
 .card{width:100%;max-width:370px;max-height:88vh;overflow:auto;background:var(--parch);border:3px solid var(--wood-d);box-shadow:0 0 0 3px #a57547,0 20px 50px rgba(0,0,0,.5)}

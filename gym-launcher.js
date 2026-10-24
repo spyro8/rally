@@ -45,6 +45,20 @@
   doc.body.append(side);
 
   /* ---------- overlays ---------- */
+  function passSafeArea(frame) {
+    /* v52.63: iOS doesn't tell embedded rooms where the notch is (env() reads 0 inside a frame), so the app measures it and hands it over as --sa-top/right/bottom/left */
+    try {
+      if (!frame || !document.documentElement.classList.contains("native")) return;
+      const p = document.createElement("div");
+      p.style.cssText = "position:fixed;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)";
+      document.body.appendChild(p); const cs = getComputedStyle(p);
+      const v = { top: cs.paddingTop, right: cs.paddingRight, bottom: cs.paddingBottom, left: cs.paddingLeft }; p.remove();
+      const set = (d) => { if (d) for (const k in v) d.documentElement.style.setProperty("--sa-" + k, v[k]); };
+      const d = frame.contentDocument; set(d);
+      if (d) for (const f of d.querySelectorAll("iframe")) { try { set(f.contentDocument); } catch { } }
+    } catch { }
+  }
+
   function makeOverlay(kind, title) {
     const ov = doc.createElement('div');
     ov.className = 'spyr-ov ' + kind;
@@ -54,6 +68,7 @@
     close.type = 'button'; close.className = 'spyr-close'; close.textContent = '← SPYR';
     const frame = doc.createElement('iframe');
     frame.title = title; frame.allow = 'fullscreen; autoplay';
+    frame.addEventListener('load', () => passSafeArea(frame));
     ov.append(close, frame);
     doc.body.append(ov);
     return { ov, frame, close };
