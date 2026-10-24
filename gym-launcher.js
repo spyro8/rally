@@ -82,7 +82,9 @@
     if (!keepFrame) o.frame.removeAttribute('src');
     window.dispatchEvent(new CustomEvent('spyr:overlay-closed'));
   }
-  side.querySelector('.gym').addEventListener('click', () => openOverlay(gym, GYM_URL, '#101b18'));
+  /* v52.56: rooms that are SPYR+ open the SPYR+ screen instead while locked */
+  const locked = (k) => { try { return !!(window.SPYR_PLUS && !window.SPYR_PLUS.can(k)); } catch { return false; } };
+  side.querySelector('.gym').addEventListener('click', () => { if (locked('gym')) { window.SPYR_PLUS.ask('gym'); return; } openOverlay(gym, GYM_URL, '#101b18'); });
   side.querySelector('.shelf').addEventListener('click', () => window.dispatchEvent(new CustomEvent('spyr:open-shelf')));
   side.querySelector('.journey').addEventListener('click', () => window.dispatchEvent(new CustomEvent('spyr:open-journey')));
   side.querySelector('.mind').addEventListener('click', () => window.dispatchEvent(new CustomEvent('spyr:open-mind')));
@@ -259,6 +261,8 @@
   window.addEventListener('message', e => {
     if (e.origin !== location.origin) return;
     const d = e.data || {};
+    /* v52.56: a room asked for the SPYR+ screen; it shows over the room */
+    if (d.type === 'spyr:paywall' && (e.source === gym.frame.contentWindow || e.source === village.frame.contentWindow)) { window.dispatchEvent(new CustomEvent('spyr:paywall', { detail: { from: String(d.from || '').slice(0, 30) } })); return; }
     if (e.source === gym.frame.contentWindow) {
       if (d.type === 'spyr:gym-exit') { closeOverlay(false); return; }
       /* v52.55: Yoga Deck lives in GYM but opens in SPYR; Meditation Space credits Meditation minutes */
