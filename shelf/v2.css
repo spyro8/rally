@@ -95,3 +95,6 @@ dialog textarea{display:block;width:100%;border:1px solid #b49c6f;background:#ff
 .cabinet #collection-slots.want-shelf .empty{top:auto}
 #want-nav{display:flex;gap:6px}
 #want-nav:empty{display:none}
+
+/* v52.63 phone app: the phone-size rules above reset the header's top padding; keep it below the notch */
+html[style*="--sa-top"] header{padding-top:max(15px,var(--sa-top))}
